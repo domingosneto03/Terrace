@@ -4,6 +4,8 @@ from terraceGame.board import Board
 
 FPS = 60 # frames per second
 
+pygame.font.init() # just to be able to write in the pieces
+
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Terrace')
 
@@ -20,7 +22,7 @@ def main():
             # turn off
             if event.type == pygame.QUIT:
                 run = False
-    
+
             # for later
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pass
