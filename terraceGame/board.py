@@ -2,12 +2,13 @@ import pygame
 from terraceGame.constants import *
 
 class Piece:
-    def __init__(self, row, col, color, size, isKing):
+    def __init__(self, row, col, color, size, isKing, x):
         self.row = row
         self.col = col
         self.color = color
         self.size = size
         self.isKing = isKing
+        self.x = x
 
     # piece outline
     def outline(size):
@@ -34,6 +35,9 @@ class Piece:
             text = font.render("T", True, WHITE)  # 'T' symbol color is green
             text_rect = text.get_rect(center=(center_x, center_y))
             win.blit(text, text_rect)
+
+        def movement(self):
+            move_sideways = self.x+1;
     
 
 
