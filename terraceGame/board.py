@@ -99,7 +99,7 @@ class Board:
 
         for row in range(ROWS):
             for col in range(COLS):
-                color = COLOR_PATTERN[row][col]
+                color = BLACK
                 pygame.draw.rect(win, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 pygame.draw.rect(win, BLACK, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 1)
                 piece = self.grid[row][col]
