@@ -35,6 +35,59 @@ class Piece:
             text_rect = text.get_rect(center=(center_x, center_y))
             win.blit(text, text_rect)
     
+    # function to move the piece
+    def move(self, new_row, new_col):
+
+        if Piece.is_valid_move(new_row, new_col):
+            self.row = new_row
+            self.col = new_col
+        else:
+            print("Invalid move")
+            pass
+
+    # validations for the piece to move
+    def is_valid_move(self, new_row, new_col):
+        board = Board()
+        current_color = COLOR_PATTERN[self.row][self.col]
+        target_color = COLOR_PATTERN[new_row][new_col]
+        is_different_plain = False
+
+        # Check if the new position is within the board boundaries
+        if not (0 <= new_row < ROWS and 0 <= new_col < COLS):
+            return False
+        
+        # Check if the new position is in the same plain or not
+        if current_color == target_color:
+            # bounds of the plain
+            if self.row < 4 and self.col < 4:
+                plain_limit = max(self.row, self.col)
+                if (new_row > plain_limit or new_col > plain_limit):
+                    is_different_plain = True
+            elif self.row < 4 and self.col > 4:
+                plain_limit = max(self.row, COLS - self.col - 1)
+                if (new_row > plain_limit or COLS - 1 - new_col < plain_limit):
+                    is_different_plain = True
+            elif self.row > 4 and self.col < 4:
+                plain_limit = max(ROWS - self.row - 1, self.col)
+                if (new_row > plain_limit or new_col > plain_limit):
+                    is_different_plain = True
+            elif self.row > 4 and self.col > 4:
+                plain_limit = max(ROWS - self.row - 1, COLS - self.col - 1)
+                if (new_row > plain_limit or new_col > plain_limit):
+                    is_different_plain = True   
+        else:
+            is_different_plain = True
+
+        # Check if the new position is empty
+        if board.grid[new_row][new_col] is not None:
+            return False
+        
+        # Example condition: The piece can move one square diagonally
+        if abs(new_row - self.row) == 1 and abs(new_col - self.col) == 1:
+            return True
+        
+        return True
+    
 
 
 class Board:
