@@ -8,6 +8,22 @@ class Piece:
         self.color = color
         self.size = size
         self.isKing = isKing
+        self.direction = 1
+
+        # Direction of the pieces: forward or backwards
+        if self.color == RED:
+            self.direction = -1
+        else:
+            self.direction = 1
+
+        self.center_x = 0
+        self.center_y = 0
+        self.calc_pos()
+    
+    # calculates the exact position the piece will be drawn
+    def calc_pos(self):
+        self.center_x = self.col * SQUARE_SIZE + SQUARE_SIZE // 2
+        self.center_y = self.row * SQUARE_SIZE + SQUARE_SIZE // 2
 
     # piece outline
     def outline(size):
@@ -22,28 +38,22 @@ class Piece:
 
     def draw(self, win):
         radius = (SQUARE_SIZE // 2 - 5) * self.size
-        center_x = self.col * SQUARE_SIZE + SQUARE_SIZE // 2
-        center_y = self.row * SQUARE_SIZE + SQUARE_SIZE // 2
         outline_color = Piece.outline(self.size)
-        pygame.draw.circle(win, outline_color, (center_x, center_y), radius + 3, width=3)
-        pygame.draw.circle(win, self.color, (center_x, center_y), radius)
+        pygame.draw.circle(win, outline_color, (self.center_x, self.center_y), radius + 3, width=3)
+        pygame.draw.circle(win, self.color, (self.center_x, self.center_y), radius)
 
         # Draw 'T' symbol
         if self.isKing == True:  # Only draw 'T' for King pieces
             font = pygame.font.Font(None, 25)
             text = font.render("T", True, WHITE)  # 'T' symbol color is green
-            text_rect = text.get_rect(center=(center_x, center_y))
+            text_rect = text.get_rect(center=(self.center_x, self.center_y))
             win.blit(text, text_rect)
     
     # function to move the piece
     def move(self, new_row, new_col):
-
-        if Piece.is_valid_move(new_row, new_col):
-            self.row = new_row
-            self.col = new_col
-        else:
-            print("Invalid move")
-            pass
+        self.row = new_row
+        self.col = new_col
+        self.calc_pos()
 
     # validations for the piece to move
     def is_valid_move(self, new_row, new_col):
@@ -132,7 +142,14 @@ class Board:
                     # King blue piece
                     else:
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, True)
+    
+    def move(self, piece, new_row, new_col):
+        self.grid[piece.row][piece.col], self.grid[new_row][new_col] = self.grid[new_row][new_col], self.grid[piece.row][piece.col]
+        piece.move(new_row, new_col)
 
+    def get_piece(self, row, col):
+        return self.grid[row][col]
+    
     def draw_board(self, win):
         win.fill(WHITE)
 
