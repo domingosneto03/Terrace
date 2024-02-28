@@ -1,6 +1,6 @@
 import pygame
 from terraceGame.constants import *
-from terraceGame.board import Board
+from terraceGame.game import Game
 
 
 FPS = 60 # frames per second
@@ -77,7 +77,7 @@ def Menu():
 def main():
     WIN, run = Menu()
     clock = pygame.time.Clock()
-    board = Board()
+    game = Game(WIN)
 
     
     while run:
@@ -93,11 +93,8 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 row, col = get_row_col_from_mouse(pos)
-                piece = board.get_piece(row, col)
-                board.move(piece, 3, 3) 
 
-        board.draw_board(WIN)
-        pygame.display.update()
+        game.update()
     
     pygame.quit()
 
