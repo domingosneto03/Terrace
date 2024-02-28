@@ -2,18 +2,78 @@ import pygame
 from terraceGame.constants import *
 from terraceGame.board import Board
 
+
 FPS = 60 # frames per second
 
 pygame.font.init() # just to be able to write in the pieces
 
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Terrace')
 
+def Menu():
+    #Picking the mode
+    print("Welcome to Terrace!!"+
+          "\nChoose a mode:"+
+          "\n\t 1. Player VS Player"+
+          "\n\t 2. Player VS Computer"+
+          "\n\t 3. Computer VS Computer")
+    mode=input("Please choose 1 2 3 or Q to quit: ").strip().lower()
+    
+    #For wrong inputs
+    while mode not in ['1', '2', '3', 'q']:
+        mode = input("Please write a valid answer: ").strip().lower()
+    
+    if mode=='1':
+        run= True
+        WIN = pygame.display.set_mode((WIDTH,HEIGHT))
+        pygame.display.set_caption('Terrace (Player VS Player)')
+    
+    #Picking difficulty for computer
+    elif mode=='2':
+        print("Choose Computer's difficulty:"
+          "\n\t 1. Easy"+
+          "\n\t 2. Medium"+
+          "\n\t 3. Hard")
+        difficulty=input("Please choose 1 2 3 or Q to quit: ").strip().lower()
+        
+        #For wrong inputs
+        while difficulty not in ['1', '2', '3', 'q']:
+            difficulty=input("Please write a valid answer: ").strip().lower()
+
+        if difficulty=='1':
+            run=True
+            WIN = pygame.display.set_mode((WIDTH,HEIGHT)) #TODO: I'm guessing WIN will change depending on the mode and difficulty?
+            pygame.display.set_caption('Terrace (Player VS Easy Computer)')
+        elif difficulty=='2':
+            run=True
+            WIN = pygame.display.set_mode((WIDTH,HEIGHT))
+            pygame.display.set_caption('Terrace (Player VS Medium Computer)')
+        elif difficulty=='3':
+            run=True
+            WIN = pygame.display.set_mode((WIDTH,HEIGHT))
+            pygame.display.set_caption('Terrace (Player VS Hard Computer)')
+        else:
+            run=False
+            WIN= None
+
+    elif mode=='3': #Will this mode have different difficulties?
+        run= True
+        WIN = pygame.display.set_mode((WIDTH,HEIGHT))
+        pygame.display.set_caption('Terrace (Computer VS Computer)')
+
+    else:
+        run=False
+        WIN = None
+
+    return WIN, run
+
+
+
 def main():
-    run = True
+    WIN, run = Menu()
     clock = pygame.time.Clock()
     board = Board()
 
+    
     while run:
         clock.tick(FPS)
 
