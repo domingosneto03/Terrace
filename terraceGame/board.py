@@ -50,7 +50,6 @@ class Piece:
         board = Board()
         current_color = COLOR_PATTERN2[self.row][self.col]
         target_color = COLOR_PATTERN2[new_row][new_col]
-        is_different_plain = False
 
         # Check if the new position is within the board boundaries
         if not (0 <= new_row < ROWS and 0 <= new_col < COLS):
@@ -58,17 +57,22 @@ class Piece:
         
         # Check if the new position is in the same plain or not
         if current_color != target_color:
-            is_different_plain = True
+            if (abs(new_row - self.row) > 1) or (abs(new_col - self.col) > 1): # Check if only moves one piece
+                print("You can only move one square when switching planes")
+                return False
 
         # Check if the new position is empty
         if board.grid[new_row][new_col] is not None:
-            return False
-        
-        # Example condition: The piece can move one square diagonally
-        if abs(new_row - self.row) == 1 and abs(new_col - self.col) == 1:
-            return True
+            if board.grid[new_row][new_col].color == self.color: # Check if the piece at the new position belongs to the current player or opponent
+                print("You cannot move to a position occupied by your own piece")
+                return False
+            else:
+                Piece.can_capture(new_row, new_col)
         
         return True
+    
+    def can_capture(self, new_row, new_col):
+        print("Hello")
     
 
 
