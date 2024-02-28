@@ -48,8 +48,8 @@ class Piece:
     # validations for the piece to move
     def is_valid_move(self, new_row, new_col):
         board = Board()
-        current_color = COLOR_PATTERN[self.row][self.col]
-        target_color = COLOR_PATTERN[new_row][new_col]
+        current_color = COLOR_PATTERN2[self.row][self.col]
+        target_color = COLOR_PATTERN2[new_row][new_col]
         is_different_plain = False
 
         # Check if the new position is within the board boundaries
@@ -57,25 +57,7 @@ class Piece:
             return False
         
         # Check if the new position is in the same plain or not
-        if current_color == target_color:
-            # bounds of the plain
-            if self.row < 4 and self.col < 4:
-                plain_limit = max(self.row, self.col)
-                if (new_row > plain_limit or new_col > plain_limit):
-                    is_different_plain = True
-            elif self.row < 4 and self.col > 4:
-                plain_limit = max(self.row, COLS - self.col - 1)
-                if (new_row > plain_limit or COLS - 1 - new_col < plain_limit):
-                    is_different_plain = True
-            elif self.row > 4 and self.col < 4:
-                plain_limit = max(ROWS - self.row - 1, self.col)
-                if (new_row > plain_limit or new_col > plain_limit):
-                    is_different_plain = True
-            elif self.row > 4 and self.col > 4:
-                plain_limit = max(ROWS - self.row - 1, COLS - self.col - 1)
-                if (new_row > plain_limit or new_col > plain_limit):
-                    is_different_plain = True   
-        else:
+        if current_color != target_color:
             is_different_plain = True
 
         # Check if the new position is empty
@@ -152,7 +134,7 @@ class Board:
 
         for row in range(ROWS):
             for col in range(COLS):
-                color = COLOR_PATTERN[row][col]
+                color = COLOR_PATTERN2[row][col]
                 pygame.draw.rect(win, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 pygame.draw.rect(win, BLACK, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 1)
                 piece = self.grid[row][col]
