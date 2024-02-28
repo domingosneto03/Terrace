@@ -1,41 +1,6 @@
 import pygame
 from terraceGame.constants import *
-
-class Piece:
-    def __init__(self, row, col, color, size, isKing):
-        self.row = row
-        self.col = col
-        self.color = color
-        self.size = size
-        self.isKing = isKing
-
-    # piece outline
-    def outline(size):
-        if size == SIZE_BIG:
-            return GREEN
-        elif size == SIZE_MEDIUM:
-            return YELLOW
-        elif size == SIZE_SMALL:
-            return PINK
-        else:
-            return ORANGE
-
-    def draw(self, win):
-        radius = (SQUARE_SIZE // 2 - 5) * self.size
-        center_x = self.col * SQUARE_SIZE + SQUARE_SIZE // 2
-        center_y = self.row * SQUARE_SIZE + SQUARE_SIZE // 2
-        outline_color = Piece.outline(self.size)
-        pygame.draw.circle(win, outline_color, (center_x, center_y), radius + 3, width=3)
-        pygame.draw.circle(win, self.color, (center_x, center_y), radius)
-
-        # Draw 'T' symbol
-        if self.isKing == True:  # Only draw 'T' for King pieces
-            font = pygame.font.Font(None, 25)
-            text = font.render("T", True, WHITE)  # 'T' symbol color is green
-            text_rect = text.get_rect(center=(center_x, center_y))
-            win.blit(text, text_rect)
-    
-
+from terraceGame.piece import Piece
 
 class Board:
     def __init__(self):
@@ -93,13 +58,13 @@ class Board:
                     # King blue piece
                     else:
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, True)
-
+    
     def draw_board(self, win):
         win.fill(WHITE)
 
         for row in range(ROWS):
             for col in range(COLS):
-                color = COLOR_PATTERN[row][col]
+                color = COLOR_PATTERN2[row][col]
                 pygame.draw.rect(win, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 pygame.draw.rect(win, BLACK, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 1)
                 piece = self.grid[row][col]
@@ -108,3 +73,12 @@ class Board:
         
         # Draw the horizontal line to divide the two halfs
         pygame.draw.line(win, BLACK, (0, HEIGHT // 2), (WIDTH, HEIGHT // 2), 3)
+
+    # switch coordinates on board with the move
+    def move(self, piece, new_row, new_col):
+        self.grid[piece.row][piece.col], self.grid[new_row][new_col] = self.grid[new_row][new_col], self.grid[piece.row][piece.col]
+        piece.move(new_row, new_col)
+
+    # method to get the piece
+    def get_piece(self, row, col):
+        return self.grid[row][col]
