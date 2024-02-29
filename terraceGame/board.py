@@ -82,3 +82,20 @@ class Board:
     # method to get the piece
     def get_piece(self, row, col):
         return self.grid[row][col]
+    
+    # method to get the valid moves
+    def get_valid_moves(self, piece):
+        moves = {}
+        current_level = COLOR_PATTERN2[piece.row][piece.col]
+
+        # Check empty squares on the same level
+        for row in range(ROWS):
+            for col in range(COLS):
+                if (row, col) != (piece.row, piece.col):
+                    target_piece = self.grid[row][col]
+                    target_level = COLOR_PATTERN2[row][col]
+                    if target_level == current_level:
+                        if target_piece is None:
+                            moves[(row, col)] = target_piece
+    
+        return moves
