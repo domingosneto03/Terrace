@@ -87,6 +87,9 @@ class Board:
         else:
             return self.grid[row][col]
     
+    def remove(self, piece):
+        self.grid[piece.row][piece.col] = None
+
     # method to get the valid moves
     def get_valid_moves(self, piece):
         moves = {}
