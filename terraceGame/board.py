@@ -125,15 +125,15 @@ class Board:
     def higher_level(self, current_level, target_level, current_row, current_col, target_row, target_col):
         if current_row < 4:
             if current_col < 4: 
-                if current_col > target_col:
+                if current_row > target_row:
                     return target_level
-                elif current_col < target_col:
+                elif current_row < target_row:
                     return current_level
                 else:
-                    if current_row > target_row:
-                        return current_level
-                    else:
+                    if current_col > target_col:
                         return target_level
+                    else:
+                        return current_level
             else:
                 if current_col > target_col:
                     return target_level
@@ -156,12 +156,12 @@ class Board:
                     else:
                         return current_level
             else:
-                if current_col > target_col:
+                if current_row > target_row:
                     return current_level
-                elif current_col < target_col:
+                elif current_row < target_row:
                     return target_level
                 else:
-                    if current_row > target_row:
+                    if current_col > target_col:
                         return current_level
                     else:
                         return target_level
