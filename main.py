@@ -83,8 +83,17 @@ def main():
     while run:
         clock.tick(FPS)
 
-        for event in pygame.event.get():
+        if game.winner() != None:
+            print("The Winner is:")
+            if game.winner() == BLUE:
+                print("BLUE")
+            elif game.winner() == RED:
+                print("RED")
+            run = False
+            WIN = None
 
+        for event in pygame.event.get():
+            
             # turn off
             if event.type == pygame.QUIT:
                 run = False

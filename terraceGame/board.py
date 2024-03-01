@@ -175,7 +175,6 @@ class Board:
                     else:
                         return target_level
 
-
 # if self.cross_center(current_level, target_level) == False: <- method does not work
     '''
     # method to check if the move is across the center

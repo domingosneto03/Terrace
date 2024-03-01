@@ -53,3 +53,6 @@ class Piece:
     
     def get_size(self):
         return self.size
+    
+    def get_king_verification(self):
+        return self.isKing
