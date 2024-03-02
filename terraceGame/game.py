@@ -60,6 +60,10 @@ class Game:
                     return True
             self.change_turn()
 
+        elif piece == 0 and (new_row, new_col) not in self.valid_moves:
+            self.valid_moves = {} # reset valid moves
+            print("Invalid move!")
+            return True
         else:
             return False
         
