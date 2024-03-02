@@ -1,6 +1,6 @@
 import pygame
 from terraceGame.constants import *
-from terraceGame.board import Board
+from terraceGame.game import Game
 
 
 FPS = 60 # frames per second
@@ -77,14 +77,23 @@ def Menu():
 def main():
     WIN, run = Menu()
     clock = pygame.time.Clock()
-    board = Board()
+    game = Game(WIN)
 
     
     while run:
         clock.tick(FPS)
 
-        for event in pygame.event.get():
+        if game.winner(game.condition) != None:
+            print("The Winner is:")
+            if game.winner(game.condition) == BLUE:
+                print("BLUE")
+            elif game.winner(game.condition) == RED:
+                print("RED")
+            run = False
+            WIN = None
 
+        for event in pygame.event.get():
+            
             # turn off
             if event.type == pygame.QUIT:
                 run = False
@@ -93,11 +102,9 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 row, col = get_row_col_from_mouse(pos)
-                piece = board.get_piece(row, col)
-                board.move(piece, 3, 3) 
+                game.select(row, col)
 
-        board.draw_board(WIN)
-        pygame.display.update()
+        game.update()
     
     pygame.quit()
 
