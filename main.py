@@ -83,11 +83,11 @@ def main():
     while run:
         clock.tick(FPS)
 
-        if game.winner() != None:
+        if game.winner(game.condition) != None:
             print("The Winner is:")
-            if game.winner() == BLUE:
+            if game.winner(game.condition) == BLUE:
                 print("BLUE")
-            elif game.winner() == RED:
+            elif game.winner(game.condition) == RED:
                 print("RED")
             run = False
             WIN = None

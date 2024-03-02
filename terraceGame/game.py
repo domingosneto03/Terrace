@@ -10,6 +10,7 @@ class Game:
         self.valid_moves = {}
         self.king_count = 2
         self.win = win # window not winner/wins
+        self.condition = 0
 
     def update(self):
         self.board.draw_board(self.win)
@@ -31,16 +32,22 @@ class Game:
     
     def _move(self, new_row, new_col):
         piece = self.board.get_piece(new_row, new_col)
+
+        # moving to a empty space
         if self.selected and piece == 0 and (new_row, new_col) in self.valid_moves:
             self.board.move(self.selected, new_row, new_col)
-            '''
             if self.selected.get_king_verification():
-                if self.selected.get_color() == RED and piece.row == 7 and piece.col == 0:
-                    self.winner()
-                elif self.turn == BLUE and piece.row == 0 and piece.col == 7:
-                    self.winner()
-            '''
+                if self.selected.get_color() == RED and new_row == 7 and new_col == 0:
+                    self.condition = 1
+                    self.winner(self.condition)
+                    return True
+                elif self.selected.get_color() == BLUE and new_row == 0 and new_col == 7:
+                    self.condition = 1
+                    self.winner(self.condition)
+                    return True
             self.change_turn()
+
+        # moving to a space with a piece
         elif self.selected and piece != 0 and (new_row, new_col) in self.valid_moves:
             target = self.valid_moves[(new_row, new_col)]
             if target:
@@ -48,7 +55,8 @@ class Game:
                 self.board.move(self.selected, new_row, new_col)
                 if target.get_king_verification():
                     self.king_count -= 1
-                    self.winner()
+                    self.condition = 2
+                    self.winner(self.condition)
                     return True
             self.change_turn()
 
@@ -58,7 +66,7 @@ class Game:
         return True
     
     def change_turn(self):
-        self.valid_moves = {}
+        self.valid_moves = {} # reset the valid moves
         if self.turn == BLUE:
             self.turn = RED
         else:
@@ -70,9 +78,11 @@ class Game:
             row, col = move
             pygame.draw.circle(self.win, GREEN,  (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 10)
 
-    def winner(self):
+    def winner(self, condition):
         winner = None
         if self.king_count < 2:
+            winner = self.turn
+        if condition == 1:
             winner = self.turn
         return winner
         
