@@ -110,9 +110,9 @@ class Board:
 
                     # moving in a different level
                     else:
-                        if self.cross_center(current_level, target_level) == False:    
+                        if not self.cross_center(current_level, target_level):    
                             # moving to a higher level
-                            if self.higher_level(current_level, target_level, piece.row, piece.col, row, col) == target_level:
+                            if self.higher_level(piece.row, piece.col, row, col):
                                 row_dir, col_dir = row - piece.row, col - piece.col
                                 if target_piece is None:
                                     # can move either in straight or diagonal direction
@@ -120,7 +120,7 @@ class Board:
                                         moves[(row, col)] = target_piece
 
                             # moving to a lower level
-                            else:
+                            elif not self.higher_level(piece.row, piece.col, row, col):
                                 # can only move in a straight direction
                                 if target_piece is None:
                                     row_dir, col_dir = row - piece.row, col - piece.col
@@ -129,55 +129,22 @@ class Board:
                                 else:
                                     row_dir, col_dir = row - piece.row, col - piece.col
                                     # can capture if the piece is bigger or equal than the opponent and if the direction is diagonal
+                                    # cannibalism: can capture pieces from the same team for strategy matters
                                     if (abs(row_dir) == 1 and abs(col_dir) == 1) and (piece.get_size() >= target_piece.get_size()): # check if moves only 1 square
                                         moves[(row, col)] = target_piece
 
         return moves
     
-    # method to check which level is higher - super complicated and confusing, don't even try to follow
-    def higher_level(self, current_level, target_level, current_row, current_col, target_row, target_col):
-        if current_row < 4:
-            if current_col < 4: 
-                if current_row > target_row:
-                    return target_level
-                elif current_row < target_row:
-                    return current_level
-                else:
-                    if current_col > target_col:
-                        return target_level
-                    else:
-                        return current_level
-            else:
-                if current_col > target_col:
-                    return target_level
-                elif current_col < target_col:
-                    return current_level
-                else:
-                    if current_row > target_row:
-                        return target_level
-                    else:
-                        return current_level
+    # method to check which level is higher - returns True if it is the target level, False otherwise
+    def higher_level(self, current_row, current_col, target_row, target_col):
+        current_level = BOARD_LEVEL_PATTERN[current_row][current_col]
+        target_level = BOARD_LEVEL_PATTERN[target_row][target_col]
+        if target_level > current_level: # moving to higher level
+            return True 
+        elif target_level < current_level: # moving to lower level
+            return False
         else:
-            if current_col < 4: 
-                if current_col > target_col:
-                    return current_level
-                elif current_col < target_col:
-                    return target_level
-                else:
-                    if current_row > target_row:
-                        return target_level
-                    else:
-                        return current_level
-            else:
-                if current_row > target_row:
-                    return current_level
-                elif current_row < target_row:
-                    return target_level
-                else:
-                    if current_col > target_col:
-                        return current_level
-                    else:
-                        return target_level
+            return -1 # in case they are different planes but in the same level - not useful for the program
 
     # method to check if the move is across the center
     def cross_center(self, current_level, target_level):
