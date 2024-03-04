@@ -112,7 +112,7 @@ class Board:
                     else:
                         if not self.cross_center(current_level, target_level):    
                             # moving to a higher level
-                            if self.higher_level(piece.row, piece.col, row, col) == target_level:
+                            if self.higher_level(piece.row, piece.col, row, col):
                                 row_dir, col_dir = row - piece.row, col - piece.col
                                 if target_piece is None:
                                     # can move either in straight or diagonal direction
@@ -120,7 +120,7 @@ class Board:
                                         moves[(row, col)] = target_piece
 
                             # moving to a lower level
-                            elif self.higher_level(piece.row, piece.col, row, col) == current_level:
+                            elif not self.higher_level(piece.row, piece.col, row, col):
                                 # can only move in a straight direction
                                 if target_piece is None:
                                     row_dir, col_dir = row - piece.row, col - piece.col
@@ -135,16 +135,16 @@ class Board:
 
         return moves
     
-    # method to check which level is higher
+    # method to check which level is higher - returns True if it is the target level, False otherwise
     def higher_level(self, current_row, current_col, target_row, target_col):
         current_level = BOARD_LEVEL_PATTERN[current_row][current_col]
         target_level = BOARD_LEVEL_PATTERN[target_row][target_col]
-        if current_level > target_level:
-            return current_level
-        elif target_level > current_level:
-            return target_level
+        if target_level > current_level: # moving to higher level
+            return True 
+        elif target_level < current_level: # moving to lower level
+            return False
         else:
-            return None # in case they are different planes but in the same level - not useful for the program
+            return -1 # in case they are different planes but in the same level - not useful for the program
 
     # method to check if the move is across the center
     def cross_center(self, current_level, target_level):
