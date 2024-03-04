@@ -128,11 +128,9 @@ class Board:
                                             moves[(row, col)] = target_piece
                                 else:
                                     row_dir, col_dir = row - piece.row, col - piece.col
-                                    # check if it is the opponet's piece
-                                    if piece.get_color() != target_piece.get_color():
-                                        # can capture if the piece is bigger or equal than the opponent and if the direction is diagonal
-                                        if (abs(row_dir) == 1 and abs(col_dir) == 1) and (piece.get_size() >= target_piece.get_size()): # check if moves only 1 square
-                                            moves[(row, col)] = target_piece
+                                    # can capture if the piece is bigger or equal than the opponent and if the direction is diagonal
+                                    if (abs(row_dir) == 1 and abs(col_dir) == 1) and (piece.get_size() >= target_piece.get_size()): # check if moves only 1 square
+                                        moves[(row, col)] = target_piece
 
         return moves
     
