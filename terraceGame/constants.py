@@ -54,3 +54,15 @@ COLOR_PATTERN = [
     [GREY6, GREY6, LIGHT_GREY5, GREY5, LIGHT_GREY7, GREY7, LIGHT_GREY8, LIGHT_GREY8],
     [LIGHT_GREY6, GREY6, LIGHT_GREY5, GREY5, LIGHT_GREY7, GREY7, LIGHT_GREY8, GREY8]
 ]
+
+# Level pattern of the board
+BOARD_LEVEL_PATTERN = [
+    [8, 7, 6, 5, 4, 3, 2, 1],
+    [7, 7, 6, 5, 4, 3, 2, 2],
+    [6, 6, 6, 5, 4, 3, 3, 3],
+    [5, 5, 5, 5, 4, 4, 4, 4],
+    [4, 4, 4, 4, 5, 5, 5, 5],
+    [3, 3, 3, 4, 5, 6, 6, 6],
+    [2, 2, 3, 4, 5, 6, 7, 7],
+    [1, 2, 3, 4, 5, 6, 7, 8]
+]
