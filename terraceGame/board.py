@@ -136,6 +136,17 @@ class Board:
 
         return moves
     
+
+    def get_all_pieces(self,color):
+        pieces= []
+        for row in self.grid:
+            for piece in row:
+                if piece!=0 and piece.get_color()==color:
+                    pieces.append(piece)
+        return pieces
+    
+
+
     # method to check which level is higher - super complicated and confusing, don't even try to follow
     def higher_level(self, current_level, target_level, current_row, current_col, target_row, target_col):
         if current_row < 4:
@@ -192,3 +203,4 @@ class Board:
         if current_level == GREY3 and target_level == GREY5:
             return True
         return False
+    

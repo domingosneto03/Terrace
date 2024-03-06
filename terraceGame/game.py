@@ -11,6 +11,7 @@ class Game:
         self.king_count = 2
         self.win = win # window not winner/wins
         self.condition = 0
+        self.red_count = self.blue_count= 16
 
     def update(self):
         self.board.draw_board(self.win)
@@ -58,6 +59,10 @@ class Game:
                     self.condition = 2
                     self.winner(self.condition)
                     return True
+                if self.selected == BLUE:
+                    self.red_count-=1
+                else:
+                    self.blue_count-=1
             self.change_turn()
 
         elif piece == 0 and (new_row, new_col) not in self.valid_moves:
@@ -89,4 +94,18 @@ class Game:
         if condition == 1:
             winner = self.turn
         return winner
-        
+    
+    #This needs the most work
+    def evaluate(self):
+        return self.red_count - self.blue_count
+    
+    #So the AI will return the new board after his turn
+    def get_board(self):
+        return self.board
+    
+    #Idk yet 
+    def ai_move(self, board):
+        self.board= board
+        self.change_turn()
+
+    
