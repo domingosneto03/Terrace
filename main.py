@@ -85,7 +85,7 @@ def main():
 
         if (mode=='2'):
             if game.turn ==RED:
-                value, new_board = minimax(game.get_board, 3, RED, game )
+                value, new_board = minimax(game.board, 1, RED, game)
                 game.ai_move(new_board)
 
         if game.winner(game.condition) != None:

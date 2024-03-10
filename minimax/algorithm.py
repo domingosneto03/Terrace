@@ -11,8 +11,8 @@ def minimax(position, depth, max_player, game):
     if max_player:
         maxEval = float('-inf')
         best_move = None
-        for move in get_all_moves(position, BLUE, game):
-            evaluation = minimax(move, depth-1, False, game)[0]
+        for move in get_all_moves(position, RED, game):
+            evaluation = minimax(move, depth-1, False, game)[0] # in the recursive call, only maxEval is necessary
             maxEval = max(maxEval, evaluation)
             if maxEval == evaluation:
                 best_move = move
@@ -21,8 +21,8 @@ def minimax(position, depth, max_player, game):
     else:
         minEval = float('inf')
         best_move = None
-        for move in get_all_moves(position, RED, game):
-            evaluation = minimax(move, depth-1, True, game)[0]
+        for move in get_all_moves(position, BLUE, game):
+            evaluation = minimax(move, depth-1, True, game)[0] # in the recursive call, only minEval is necessary
             minEval = min(minEval, evaluation)
             if minEval == evaluation:
                 best_move = move
@@ -30,11 +30,16 @@ def minimax(position, depth, max_player, game):
         return minEval, best_move
 
 
-def simulate_move(piece, move, board, game, skip):
-    board.move(piece, move[0], move[1])
-    if skip:
-        board.remove(skip)
+def simulate_move(piece, move, board, game):
+    # move looks like this ((row, col), None/Piece))
+    row = move[0][0]
+    col = move[0][1]
+    target = move[1]
 
+    board.move(piece, row, col)
+    target = move[1]
+    if target != None:
+        board.remove(piece)
     return board
 
 
@@ -43,11 +48,11 @@ def get_all_moves(board, color, game):
 
     for piece in board.get_all_pieces(color):
         valid_moves = board.get_valid_moves(piece)
-        for move, skip in valid_moves.items():
+        for move in valid_moves.items():
             # draw_moves(game, board, piece)
             temp_board = deepcopy(board)
             temp_piece = temp_board.get_piece(piece.row, piece.col)
-            new_board = simulate_move(temp_piece, move, temp_board, game, skip)
+            new_board = simulate_move(temp_piece, move, temp_board, game)
             moves.append(new_board)
     
     return moves
