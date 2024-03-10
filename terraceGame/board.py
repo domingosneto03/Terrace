@@ -7,6 +7,7 @@ class Board:
         self.grid = []
         self.create_grid()
         self.create_pieces()
+        self.red_left = self.blue_left = 16 # not entirely necessary, just for testing
 
     def create_grid(self):
         for row in range(ROWS):
@@ -89,6 +90,11 @@ class Board:
     
     # method o reomove a piece from the board
     def remove(self, piece):
+        if piece.get_color() == BLUE:
+            self.blue_left = self.blue_left - 1
+        else:
+            self.red_left = self.red_left - 1
+            
         self.grid[piece.row][piece.col] = None
 
     # method to get the valid moves
@@ -204,3 +210,6 @@ class Board:
             return True
         return False
     
+
+    def evaluate(self):
+        return self.blue_left - self.red_left
