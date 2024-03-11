@@ -10,7 +10,7 @@ class Game:
         self.valid_moves = {}
         self.king_count = 2
         self.win = win # window not winner/wins
-        self.condition = 0
+        self.condition = 0 # there is 2 winning conditions - use on winner() method
 
     def update(self):
         self.board.draw_board(self.win)
@@ -89,4 +89,14 @@ class Game:
         if condition == 1:
             winner = self.turn
         return winner
-        
+    
+    #So the AI will return the new board after his turn
+    def get_board(self):
+        return self.board
+    
+    #Idk yet 
+    def ai_move(self, board):
+        self.board= board
+        self.change_turn()
+
+    

@@ -1,7 +1,7 @@
 import pygame
 from terraceGame.constants import *
 from terraceGame.game import Game
-
+from minimax.algorithm import minimax
 
 FPS = 60 # frames per second
 
@@ -61,7 +61,7 @@ def Menu():
             run=False
             WIN= None
 
-    elif mode=='3': #Will this mode have different difficulties?
+    elif mode=='3':
         run= True
         WIN = pygame.display.set_mode((WIDTH,HEIGHT))
         pygame.display.set_caption('Terrace (Computer VS Computer)')
@@ -70,18 +70,33 @@ def Menu():
         run=False
         WIN = None
 
-    return WIN, run
+    return mode, WIN, run, difficulty
 
 
 
 def main():
-    WIN, run = Menu()
+    mode, WIN, run, difficulty = Menu()
     clock = pygame.time.Clock()
     game = Game(WIN)
 
     
     while run:
         clock.tick(FPS)
+
+        if (mode=='2'):
+            if(difficulty=='1'):
+                if game.turn ==RED:
+                    value, new_board = minimax(game.board, 1, RED, game)
+                    game.ai_move(new_board)
+            if(difficulty=='2'):
+                if game.turn ==RED:
+                    value, new_board = minimax(game.board, 2, RED, game)
+                    game.ai_move(new_board)
+            if(difficulty=='3'):
+                if game.turn ==RED:
+                    value, new_board = minimax(game.board, 3, RED, game)
+                    game.ai_move(new_board)
+
 
         if game.winner(game.condition) != None:
             print("The Winner is:")

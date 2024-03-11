@@ -7,6 +7,7 @@ class Board:
         self.grid = []
         self.create_grid()
         self.create_pieces()
+        self.red_count = self.blue_count= 16
 
     def create_grid(self):
         for row in range(ROWS):
@@ -89,6 +90,11 @@ class Board:
     
     # method o reomove a piece from the board
     def remove(self, piece):
+        if piece.get_color == BLUE:
+            self.blue_count -= 1
+        else:
+            self.red_count -= 1
+            
         self.grid[piece.row][piece.col] = None
 
     # method to get the valid moves
@@ -135,14 +141,44 @@ class Board:
 
         return moves
     
-    # method to check which level is higher - returns True if it is the target level, False otherwise
-    def higher_level(self, current_row, current_col, target_row, target_col):
-        current_level = BOARD_LEVEL_PATTERN[current_row][current_col]
-        target_level = BOARD_LEVEL_PATTERN[target_row][target_col]
-        if target_level > current_level: # moving to higher level
-            return True 
-        elif target_level < current_level: # moving to lower level
-            return False
+
+    #This needs the most work
+    def evaluate(self):
+        return self.red_count - self.blue_count
+    
+    def get_all_pieces(self,color):
+        pieces= []
+        for row in self.grid:
+            for piece in row:
+                if piece!=None and piece.get_color()==color:
+                    pieces.append(piece)
+        return pieces
+    
+
+
+    # method to check which level is higher - super complicated and confusing, don't even try to follow
+    def higher_level(self, current_level, target_level, current_row, current_col, target_row, target_col):
+        if current_row < 4:
+            if current_col < 4: 
+                if current_row > target_row:
+                    return target_level
+                elif current_row < target_row:
+                    return current_level
+                else:
+                    if current_col > target_col:
+                        return target_level
+                    else:
+                        return current_level
+            else:
+                if current_col > target_col:
+                    return target_level
+                elif current_col < target_col:
+                    return current_level
+                else:
+                    if current_row > target_row:
+                        return target_level
+                    else:
+                        return current_level
         else:
             return -1 # in case they are different planes but in the same level - not useful for the program
 
@@ -157,3 +193,4 @@ class Board:
         if current_level == GREY3 and target_level == GREY5:
             return True
         return False
+    
