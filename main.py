@@ -16,6 +16,7 @@ def get_row_col_from_mouse(pos):
     return row, col
 
 def Menu():
+    difficulty = '0'
     #Picking the mode
     print("Welcome to Terrace!!"+
           "\nChoose a mode:"+
