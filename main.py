@@ -70,12 +70,12 @@ def Menu():
         run=False
         WIN = None
 
-    return mode, WIN, run
+    return mode, WIN, run, difficulty
 
 
 
 def main():
-    mode, WIN, run = Menu()
+    mode, WIN, run, difficulty = Menu()
     clock = pygame.time.Clock()
     game = Game(WIN)
 
@@ -84,9 +84,19 @@ def main():
         clock.tick(FPS)
 
         if (mode=='2'):
-            if game.turn ==RED:
-                value, new_board = minimax(game.board, 1, RED, game)
-                game.ai_move(new_board)
+            if(difficulty=='1'):
+                if game.turn ==RED:
+                    value, new_board = minimax(game.board, 1, RED, game)
+                    game.ai_move(new_board)
+            if(difficulty=='2'):
+                if game.turn ==RED:
+                    value, new_board = minimax(game.board, 2, RED, game)
+                    game.ai_move(new_board)
+            if(difficulty=='3'):
+                if game.turn ==RED:
+                    value, new_board = minimax(game.board, 3, RED, game)
+                    game.ai_move(new_board)
+
 
         if game.winner(game.condition) != None:
             print("The Winner is:")
