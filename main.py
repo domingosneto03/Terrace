@@ -98,19 +98,43 @@ def main():
 
         elif (mode=='2'):
             if(difficulty=='1'):
+                if game.winner(game.condition) != None: # to improve
+                    stats(game)
+                    run = False
+                    WIN = None
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 1, RED, game)
                     game.ai_move(new_board)
 
             if(difficulty=='2'):
+                if game.winner(game.condition) != None: # to improve
+                    stats(game)
+                    run = False
+                    WIN = None
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 2, RED, game)
                     game.ai_move(new_board)
 
             if(difficulty=='3'):
+                if game.winner(game.condition) != None: # to improve
+                    stats(game)
+                    run = False
+                    WIN = None
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 3, RED, game)
                     game.ai_move(new_board)
+
+        elif(mode=='3'):
+            if game.winner(game.condition) != None: # to improve
+                stats(game)
+                run = False
+                WIN = None
+            if game.turn ==RED:
+                value, new_board = minimax(game.board, 1, RED, game)
+                game.ai_move(new_board)
+            elif game.turn == BLUE:
+                value, new_board = minimax(game.board, 1, BLUE, game)
+                game.ai_move(new_board)
 
         for event in pygame.event.get():
             

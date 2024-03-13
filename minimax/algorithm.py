@@ -8,11 +8,11 @@ def minimax(position, depth, max_player, game):
     if depth == 0 or game.winner(game.condition) != None:
         return position.evaluate(), position
     
-    if max_player:
+    if max_player == RED:
         maxEval = float('-inf')
         best_move = None
         for move in get_all_moves(position, RED, game):
-            evaluation = minimax(move, depth-1, False, game)[0] # in the recursive call, only maxEval is necessary
+            evaluation = minimax(move, depth-1, BLUE, game)[0] # in the recursive call, only maxEval is necessary
             maxEval = max(maxEval, evaluation)
             if maxEval == evaluation:
                 best_move = move
@@ -22,7 +22,7 @@ def minimax(position, depth, max_player, game):
         minEval = float('inf')
         best_move = None
         for move in get_all_moves(position, BLUE, game):
-            evaluation = minimax(move, depth-1, True, game)[0] # in the recursive call, only minEval is necessary
+            evaluation = minimax(move, depth-1, RED, game)[0] # in the recursive call, only minEval is necessary
             minEval = min(minEval, evaluation)
             if minEval == evaluation:
                 best_move = move
