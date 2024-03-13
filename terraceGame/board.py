@@ -9,11 +9,13 @@ class Board:
         self.create_pieces()
         self.red_count = self.blue_count= 16
 
+
     def create_grid(self):
         for row in range(ROWS):
             self.grid.append([])
             for col in range(COLS):
                 self.grid[row].append(None)
+
 
     def create_pieces(self):
         for row in range(ROWS):
@@ -59,7 +61,8 @@ class Board:
                     # King blue piece
                     else:
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, True)
-    
+
+
     def draw_board(self, win):
         win.fill(WHITE)
 
@@ -71,14 +74,14 @@ class Board:
                 piece = self.grid[row][col]
                 if piece:
                     piece.draw(win)
-        
-        # Draw the horizontal line to divide the two halfs
-        pygame.draw.line(win, BLACK, (0, HEIGHT // 2), (WIDTH, HEIGHT // 2), 3)
+        pygame.draw.line(win, BLACK, (0, HEIGHT // 2), (WIDTH, HEIGHT // 2), 3) # Draw the horizontal line to divide the two halfs
+
 
     # switch coordinates on board with the move
     def move(self, piece, new_row, new_col):
         self.grid[piece.row][piece.col], self.grid[new_row][new_col] = self.grid[new_row][new_col], self.grid[piece.row][piece.col]
         piece.move(new_row, new_col)
+
 
     # method to get the piece
     def get_piece(self, row, col):
@@ -87,17 +90,18 @@ class Board:
             return 0
         else:
             return self.grid[row][col]
-    
-    # method o reomove a piece from the board
+
+
+    # method o remove a piece from the board
     def remove(self, piece):
-        if piece.get_color == BLUE:
+        self.grid[piece.row][piece.col] = None
+        if piece.get_color() == BLUE:
             self.blue_count -= 1
         else:
             self.red_count -= 1
-            
-        self.grid[piece.row][piece.col] = None
 
-    # method to get the valid moves
+
+    # method to get the valid moves for a piece
     def get_valid_moves(self, piece):
         moves = {}
         current_level = COLOR_PATTERN[piece.row][piece.col]
@@ -138,25 +142,10 @@ class Board:
                                     # cannibalism: can capture pieces from the same team for strategy matters
                                     if (abs(row_dir) == 1 and abs(col_dir) == 1) and (piece.get_size() >= target_piece.get_size()): # check if moves only 1 square
                                         moves[(row, col)] = target_piece
-
         return moves
-    
-
-    #This needs the most work
-    def evaluate(self):
-        return self.red_count - self.blue_count
-    
-    def get_all_pieces(self,color):
-        pieces= []
-        for row in self.grid:
-            for piece in row:
-                if piece!=None and piece.get_color()==color:
-                    pieces.append(piece)
-        return pieces
-    
 
 
-   # method to check which level is higher - returns True if it is the target level, False otherwise
+    # method to check which level is higher - returns True if it is the target level, False otherwise
     def higher_level(self, current_row, current_col, target_row, target_col):
         current_level = BOARD_LEVEL_PATTERN[current_row][current_col]
         target_level = BOARD_LEVEL_PATTERN[target_row][target_col]
@@ -166,6 +155,7 @@ class Board:
             return False
         else:
             return -1 # in case they are different planes but in the same level - not useful for the program
+
 
     # method to check if the move is across the center
     def cross_center(self, current_level, target_level):
@@ -179,3 +169,23 @@ class Board:
             return True
         return False
     
+    # function to return all pieces
+    def get_all_pieces(self,color):
+        pieces= []
+        for row in self.grid:
+            for piece in row:
+                if piece!=None and piece.get_color()==color:
+                    pieces.append(piece)
+        return pieces
+    
+
+    #This needs the most work
+    # function should return a score
+    # highest score -> best move for AI
+    # lowest score -> best move for player
+    # always a diff between red and blue team
+    def evaluate(self):
+        val1 = self.red_count # to debug
+        val2 = self.blue_count
+        evaluation = self.red_count - self.blue_count
+        return evaluation

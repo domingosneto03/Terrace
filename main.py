@@ -73,7 +73,13 @@ def Menu():
 
     return mode, WIN, run, difficulty
 
-
+# stats of the game to appear at the end
+def stats(game):
+    print("The Winner is:")
+    if game.winner(game.condition) == BLUE:
+        print("BLUE")
+    elif game.winner(game.condition) == RED:
+        print("RED")
 
 def main():
     mode, WIN, run, difficulty = Menu()
@@ -84,29 +90,37 @@ def main():
     while run:
         clock.tick(FPS)
 
-        if (mode=='2'):
+        if(mode=='1'):
+            if game.winner(game.condition) != None: # to improve
+                stats(game)
+                run = False
+                WIN = None
+
+        elif (mode=='2'):
             if(difficulty=='1'):
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 1, RED, game)
                     game.ai_move(new_board)
+                    if game.winner(game.condition) != None: # to improve
+                        stats(game)
+                        run = False
+                        WIN = None
             if(difficulty=='2'):
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 2, RED, game)
                     game.ai_move(new_board)
+                    if game.winner(game.condition) != None: # to improve
+                        stats(game)
+                        run = False
+                        WIN = None
             if(difficulty=='3'):
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 3, RED, game)
                     game.ai_move(new_board)
-
-
-        if game.winner(game.condition) != None:
-            print("The Winner is:")
-            if game.winner(game.condition) == BLUE:
-                print("BLUE")
-            elif game.winner(game.condition) == RED:
-                print("RED")
-            run = False
-            WIN = None
+                    if game.winner(game.condition) != None: # to improve
+                        stats(game)
+                        run = False
+                        WIN = None
 
         for event in pygame.event.get():
             
