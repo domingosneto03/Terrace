@@ -1,4 +1,5 @@
 import pygame
+import math
 from terraceGame.constants import *
 from terraceGame.piece import Piece
 
@@ -8,6 +9,8 @@ class Board:
         self.create_grid()
         self.create_pieces()
         self.red_count = self.blue_count= 16
+        self.dist_to_blue_king = self.dist_to_red_king = 0 # calculated with hypotenuse
+        self.blue_dist_to_red_corner = self.red_dist_to_blue_corner = 0 # also calculated with hypotenuse
 
 
     def create_grid(self):
@@ -101,6 +104,45 @@ class Board:
             self.red_count -= 1
 
 
+    # method to calculate a distance of a piece to the opponent's king
+    # logic: Pythagorean theorem
+    # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
+    def calculate_distance_to_king(self, turn, piece_row, piece_col):
+        if turn == RED:
+            if self.search_king(BLUE):
+                king_row, king_col = self.search_king(BLUE)
+                if piece_row == king_row:
+                    self.dist_to_blue_king = abs(piece_col - king_col) # if the king is in the same row
+                elif piece_col == king_col:
+                    self.dist_to_blue_king = abs(piece_row - king_row) # if the king is in the same row
+                else:
+                    leg1 = abs(piece_row - king_row)
+                    leg2 = abs(piece_col - king_col)
+                    self.dist_to_blue_king = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
+        else:
+            if self.search_king(RED):
+                king_row, king_col = self.search_king(RED)
+                if piece_row == king_row:
+                    self.dist_to_red_king = abs(piece_col - king_col) # if the king is in the same row
+                elif piece_col == king_col:
+                    self.dist_to_red_king = abs(piece_row - king_row) # if the king is in the same row
+                else:
+                    leg1 = abs(piece_row - king_row)
+                    leg2 = abs(piece_col - king_col)
+                    self.dist_to_red_king = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
+
+
+    # method to loop through the board and find the king
+    def search_king(self, color):
+        for row in range(ROWS):
+            for col in range(COLS):
+                piece = self.grid[row][col]
+                if piece != None:
+                    if piece.get_king_verification():
+                        if piece.get_color() == color:
+                            return row, col
+    
+
     # method to get the valid moves for a piece
     def get_valid_moves(self, piece):
         moves = {}
@@ -140,8 +182,9 @@ class Board:
                                     row_dir, col_dir = row - piece.row, col - piece.col
                                     # can capture if the piece is bigger or equal than the opponent and if the direction is diagonal
                                     # cannibalism: can capture pieces from the same team for strategy matters
-                                    if (abs(row_dir) == 1 and abs(col_dir) == 1) and (piece.get_size() >= target_piece.get_size()): # check if moves only 1 square
-                                        moves[(row, col)] = target_piece
+                                    if not (target_piece.get_king_verification() and piece.get_color() == target_piece.get_color()): # no suicides allowed
+                                        if (abs(row_dir) == 1 and abs(col_dir) == 1) and (piece.get_size() >= target_piece.get_size()): # check if moves only 1 square
+                                            moves[(row, col)] = target_piece
         return moves
 
 
@@ -184,6 +227,8 @@ class Board:
     # highest score -> best move for AI
     # lowest score -> best move for player
     # always a diff between red and blue team
+    # multiplying by a value has an impact on the score -> the more valuable the evaluaion for the game, higher is the value
     def evaluate(self):
-        evaluation3 = (self.red_count * 0.5) - (self.blue_count * 0.5) # multiplying by 0.5 affectts impact on the score
-        return evaluation3
+        evaluation1 = (-self.dist_to_blue_king * 1) - (-self.dist_to_red_king * 1) # negative values to represent that the higher the distance, the lower the score
+        evaluation3 = (self.red_count * 1) - (self.blue_count * 1) # multiplying by 0.5 has negative impact on the score
+        return evaluation1 + evaluation3

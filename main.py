@@ -63,9 +63,9 @@ def Menu():
             WIN= None
 
     elif mode=='3':
-        run= True
-        WIN = pygame.display.set_mode((WIDTH,HEIGHT))
-        pygame.display.set_caption('Terrace (Computer VS Computer)')
+        print("Coming soon")
+        run = False
+        WIN = None
 
     else:
         run=False
