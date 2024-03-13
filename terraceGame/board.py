@@ -185,7 +185,5 @@ class Board:
     # lowest score -> best move for player
     # always a diff between red and blue team
     def evaluate(self):
-        val1 = self.red_count # to debug
-        val2 = self.blue_count
-        evaluation = self.red_count - self.blue_count
-        return evaluation
+        evaluation3 = (self.red_count * 0.5) - (self.blue_count * 0.5) # multiplying by 0.5 affectts impact on the score
+        return evaluation3

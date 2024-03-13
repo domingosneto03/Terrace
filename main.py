@@ -73,7 +73,7 @@ def Menu():
 
     return mode, WIN, run, difficulty
 
-# stats of the game to appear at the end
+# stats of the game to appear at the end - want to make a table with the statistics
 def stats(game):
     print("The Winner is:")
     if game.winner(game.condition) == BLUE:
@@ -124,6 +124,7 @@ def main():
                     value, new_board = minimax(game.board, 3, RED, game)
                     game.ai_move(new_board)
 
+        # needs a lot of work
         elif(mode=='3'):
             if game.winner(game.condition) != None: # to improve
                 stats(game)
