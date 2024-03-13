@@ -101,26 +101,16 @@ def main():
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 1, RED, game)
                     game.ai_move(new_board)
-                    if game.winner(game.condition) != None: # to improve
-                        stats(game)
-                        run = False
-                        WIN = None
+
             if(difficulty=='2'):
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 2, RED, game)
                     game.ai_move(new_board)
-                    if game.winner(game.condition) != None: # to improve
-                        stats(game)
-                        run = False
-                        WIN = None
+
             if(difficulty=='3'):
                 if game.turn ==RED:
                     value, new_board = minimax(game.board, 3, RED, game)
                     game.ai_move(new_board)
-                    if game.winner(game.condition) != None: # to improve
-                        stats(game)
-                        run = False
-                        WIN = None
 
         for event in pygame.event.get():
             

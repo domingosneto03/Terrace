@@ -82,6 +82,8 @@ class Game:
             row, col = move
             pygame.draw.circle(self.win, GREEN,  (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 10)
 
+    # does not work for mode 2 or 3 (AI)
+    # does not handle cannibalism the right way
     def winner(self, condition):
         winner = None
         if self.king_count < 2:
