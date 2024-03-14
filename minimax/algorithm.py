@@ -7,6 +7,7 @@ BLUE = (0, 0, 255)
 def minimax(position, depth, max_player, game):
     if depth == 0 or game.winner(game.condition) != None:
         return position.evaluate(), position
+
     
     if max_player:
         maxEval = float('-inf')
@@ -37,13 +38,17 @@ def simulate_move(piece, move, board, game):
     target = move[1]
     if target != None:
         board.remove(target)
+        # this needs work. It is only supposed to change boolean in the actual move, not simulation
         if target.get_king_verification():
-            if target.get_color() == RED:
-                game.red_king = False
-                print("something happened")
-            else:
-                game.blue_king = False
-
+            game.king_count = 1
+            game.condition = 2
+    
+    else:
+        if (row == 0 and col == 7) or (row == 7 and col == 0): # winning corners to reach
+            if piece.get_king_verification():
+                game.reached_corner = True
+                game.condition = 1
+                
     board.move(piece, row, col)
     board.calculate_distance_to_king(game.turn, row, col)
     return board
@@ -55,7 +60,7 @@ def get_all_moves(board, color, game):
     for piece in board.get_all_pieces(color):
         valid_moves = board.get_valid_moves(piece)
         for move in valid_moves.items():
-            draw_moves(game, board, piece)
+            #draw_moves(game, board, piece)
             temp_board = deepcopy(board)
             temp_piece = temp_board.get_piece(piece.row, piece.col)
             new_board = simulate_move(temp_piece, move, temp_board, game)
@@ -63,10 +68,12 @@ def get_all_moves(board, color, game):
     
     return moves
 
-
+'''
 # for testing
 def draw_moves(game, board, piece):
     valid_moves = board.get_valid_moves(piece)
     board.draw_board(game.win)
     game.draw_valid_moves(valid_moves.keys())
     pygame.display.update()
+
+'''

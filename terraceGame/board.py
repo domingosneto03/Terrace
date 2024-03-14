@@ -8,9 +8,10 @@ class Board:
         self.grid = []
         self.create_grid()
         self.create_pieces()
-        self.red_count = self.blue_count= 16
+        self.red_count = self.blue_count = 16
         self.dist_to_blue_king = self.dist_to_red_king = 0 # calculated with hypotenuse
         self.blue_dist_to_red_corner = self.red_dist_to_blue_corner = 0 # also calculated with hypotenuse
+        self.blue_king = self.red_king = True # both kings are still in the game
 
 
     def create_grid(self):
@@ -141,6 +142,10 @@ class Board:
                     if piece.get_king_verification():
                         if piece.get_color() == color:
                             return row, col
+        if color == RED:
+            self.red_king = False
+        else:
+            self.blue_king = False
     
 
     # method to get the valid moves for a piece

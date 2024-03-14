@@ -11,6 +11,8 @@ class Game:
         self.blue_king = self.red_king = True # both kings are still in the game
         self.win = win # window not winner/wins
         self.condition = 0 # there is 2 winning conditions - use on winner() method
+        self.king_count = 2
+        self.reached_corner = False
 
     def update(self):
         self.board.draw_board(self.win)
@@ -41,13 +43,11 @@ class Game:
                 # if red king reaches the opposite corner
                 if self.selected.get_color() == RED and new_row == 7 and new_col == 0:
                     self.condition = 1
-                    self.winner(self.condition)
                     return True
                 
                 # if blue king reaches the opposite corner
                 elif self.selected.get_color() == BLUE and new_row == 0 and new_col == 7:
                     self.condition = 1
-                    self.winner(self.condition)
                     return True
                 
             self.change_turn()
@@ -67,7 +67,6 @@ class Game:
                         self.blue_king = False
 
                     self.condition = 2
-                    self.winner(self.condition)
                     return True
                 
             self.change_turn()
@@ -97,14 +96,15 @@ class Game:
 
     def winner(self, condition):
         winner = None
-
-        if not self.blue_king:
-            winner = RED
-        elif not self.red_king:
-            winner = BLUE
-
+        red_king = self.board.search_king(RED)
+        blue_king = self.board.search_king(BLUE)
         if condition == 1:
             winner = self.turn
+        else:
+            if not blue_king:
+                winner = RED
+            elif not red_king:
+                winner = BLUE
         return winner
     
     # So the AI will return the new board after his turn
