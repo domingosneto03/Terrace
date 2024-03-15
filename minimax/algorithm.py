@@ -32,7 +32,7 @@ def minimax(position, depth, max_player, game):
 
 
 def simulate_move(piece, move, board, game):
-    # move looks like this ((row, col), None/Piece))
+    # move looks like this ((row, col), None/<Piece>))
     row = move[0][0]
     col = move[0][1]
     target = move[1]
@@ -44,13 +44,17 @@ def simulate_move(piece, move, board, game):
             game.condition = 2
     
     else:
-        if (row == 0 and col == 7) or (row == 7 and col == 0): # winning corners to reach
-            if piece.get_king_verification():
+        # winning corners to reach
+        if piece.get_king_verification():
+            if ((row == 0 and col == 7) and piece.get_king_verification() and piece.get_color() == BLUE) or ((row == 7 and col == 0) and piece.get_king_verification() and piece.get_color() == RED):
                 game.reached_corner = True
                 game.condition = 1
                 
     board.move(piece, row, col)
     board.calculate_distance_to_king(game.turn, row, col)
+    
+    if piece.get_king_verification():
+        board.calculate_distance_to_corner(piece.get_color(), row, col)
     return board
 
 
@@ -73,7 +77,7 @@ def get_all_moves(board, color, game):
 def draw_moves(game, board, piece):
     valid_moves = board.get_valid_moves(piece)
     board.draw_board(game.win)
-    game.draw_valid_moves(valid_moves.keys())
+    game.draw_valid_moves(valid_moves.keys(), piece.get_color())
     pygame.display.update()
-
+    pygame.time.delay(20)
 '''

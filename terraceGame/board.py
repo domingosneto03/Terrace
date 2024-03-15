@@ -10,7 +10,7 @@ class Board:
         self.create_pieces()
         self.red_count = self.blue_count = 16
         self.dist_to_blue_king = self.dist_to_red_king = 0 # calculated with hypotenuse
-        self.blue_dist_to_red_corner = self.red_dist_to_blue_corner = 0 # also calculated with hypotenuse
+        self.blue_dist_to_red_corner = self.red_dist_to_blue_corner = round(math.sqrt(math.pow(7, 2) + math.pow(7, 2))) # initial distance is hypotenuse of the board
         self.blue_king = self.red_king = True # both kings are still in the game
 
 
@@ -133,6 +133,36 @@ class Board:
                     self.dist_to_red_king = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
 
 
+    # method to calculate a distance of the king to the opponent's opposite corner
+    # logic: Pythagorean theorem
+    # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
+    def calculate_distance_to_corner(self, piece_color, piece_row, piece_col):
+
+        # (row, col)
+        red_corner = (0, 7)
+        blue_corner = (7, 0)
+
+        if piece_color == RED:
+            if piece_row == blue_corner[0]:
+                self.red_dist_to_blue_corner = abs(piece_col - blue_corner[1]) # if the king is in the same row as the corner
+            elif piece_col == blue_corner[1]:
+                self.red_dist_to_blue_corner = abs(piece_row - blue_corner[0]) # if the king is in the same row as the corner
+            else:
+                leg1 = abs(piece_row - blue_corner[0])
+                leg2 = abs(piece_col - blue_corner[1])
+                self.red_dist_to_blue_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
+        else:
+            if piece_color == BLUE:
+                if piece_row == red_corner[0]:
+                    self.blue_dist_to_red_corner = abs(piece_col - red_corner[1]) # if the king is in the same row as the corner
+                elif piece_col == blue_corner[1]:
+                    self.blue_dist_to_red_corner = abs(piece_row - red_corner[0]) # if the king is in the same row as the corner
+                else:
+                    leg1 = abs(piece_row - red_corner[0])
+                    leg2 = abs(piece_col - red_corner[1])
+                    self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
+
+
     # method to loop through the board and find the king
     def search_king(self, color):
         for row in range(ROWS):
@@ -235,5 +265,6 @@ class Board:
     # multiplying by a value has an impact on the score -> the more valuable the evaluaion for the game, higher is the value
     def evaluate(self):
         evaluation1 = (-self.dist_to_blue_king * 1) - (-self.dist_to_red_king * 1) # negative values to represent that the higher the distance, the lower the score
-        evaluation3 = (self.red_count * 1) - (self.blue_count * 1) # multiplying by 0.5 has negative impact on the score
-        return evaluation1 + evaluation3
+        evaluation2 = (-self.red_dist_to_blue_corner * 1) - (-self.blue_dist_to_red_corner * 1) # negative values to represent that the higher the distance, the lower the score
+        evaluation3 = (self.red_count * 1) - (self.blue_count * 1)
+        return evaluation1 + evaluation2 + evaluation3

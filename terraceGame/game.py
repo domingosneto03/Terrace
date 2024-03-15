@@ -16,7 +16,7 @@ class Game:
 
     def update(self):
         self.board.draw_board(self.win)
-        self.draw_valid_moves(self.valid_moves)
+        self.draw_valid_moves(self.valid_moves, self.turn)
         pygame.display.update()
 
     def select(self, row, col):
@@ -89,10 +89,14 @@ class Game:
             self.turn = BLUE
         return self.turn
 
-    def draw_valid_moves(self, moves):
+    def draw_valid_moves(self, moves, color):
         for move in moves:
             row, col = move
-            pygame.draw.circle(self.win, GREEN,  (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 10)
+            if color == BLUE:
+                valid_color = PINK
+            else:
+                valid_color = GREEN
+            pygame.draw.circle(self.win, valid_color,  (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 10)
 
     def winner(self, condition):
         winner = None
