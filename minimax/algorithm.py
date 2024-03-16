@@ -5,7 +5,7 @@ RED = (255,0,0)
 BLUE = (0, 0, 255)
 
 def minimax(position, depth, max_player, game):
-    if depth == 0 or game.winner(game.condition) != None:
+    if depth == 0 or game.winner() != None:
         return position.evaluate(), position
 
     
@@ -38,23 +38,12 @@ def simulate_move(piece, move, board, game):
     target = move[1]
     if target != None:
         board.remove(target)
-        # this needs work. It is only supposed to change boolean in the actual move, not simulation
-        if target.get_king_verification():
-            game.king_count = 1
-            game.condition = 2
-    
-    else:
-        # winning corners to reach
-        if piece.get_king_verification():
-            if ((row == 0 and col == 7) and piece.get_king_verification() and piece.get_color() == BLUE) or ((row == 7 and col == 0) and piece.get_king_verification() and piece.get_color() == RED):
-                game.reached_corner = True
-                game.condition = 1
-                
-    board.move(piece, row, col)
-    board.calculate_distance_to_king(game.turn, row, col)
-    
+
+    board.move(piece, row, col) #simulate the move
+    board.calculate_distance_to_king(game.turn, row, col) # after simulation calculate the distance to the king
     if piece.get_king_verification():
-        board.calculate_distance_to_corner(piece.get_color(), row, col)
+        board.calculate_distance_to_corner(piece.get_color(), row, col) # after simulation calculate the king's distance to opposite corner
+
     return board
 
 

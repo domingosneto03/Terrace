@@ -8,11 +8,7 @@ class Game:
         self.board = Board()
         self.turn = BLUE
         self.valid_moves = {}
-        self.blue_king = self.red_king = True # both kings are still in the game
         self.win = win # window not winner/wins
-        self.condition = 0 # there is 2 winning conditions - use on winner() method
-        self.king_count = 2
-        self.reached_corner = False
 
     def update(self):
         self.board.draw_board(self.win)
@@ -37,19 +33,8 @@ class Game:
 
         # moving to a empty space
         if self.selected and piece == 0 and (new_row, new_col) in self.valid_moves:
-            self.board.move(self.selected, new_row, new_col)
-            if self.selected.get_king_verification():
-
-                # if red king reaches the opposite corner
-                if self.selected.get_color() == RED and new_row == 7 and new_col == 0:
-                    self.condition = 1
-                    return True
-                
-                # if blue king reaches the opposite corner
-                elif self.selected.get_color() == BLUE and new_row == 0 and new_col == 7:
-                    self.condition = 1
-                    return True
-                
+            self.board.move(self.selected, new_row, new_col)  
+            
             self.change_turn()
 
         # moving to a space with a piece
@@ -58,16 +43,6 @@ class Game:
             if target:
                 self.board.remove(target)
                 self.board.move(self.selected, new_row, new_col)
-                if target.get_king_verification():
-
-                    if target.get_color() == RED: # if red king is captured
-                        self.red_king = False
-                    
-                    else: # if blue king is captured
-                        self.blue_king = False
-
-                    self.condition = 2
-                    return True
                 
             self.change_turn()
 
@@ -80,7 +55,8 @@ class Game:
         else:
             return False
         return True
-    
+
+
     def change_turn(self):
         self.valid_moves = {} # reset the valid moves
         if self.turn == BLUE:
@@ -88,6 +64,7 @@ class Game:
         else:
             self.turn = BLUE
         return self.turn
+
 
     def draw_valid_moves(self, moves, color):
         for move in moves:
@@ -98,17 +75,32 @@ class Game:
                 valid_color = GREEN
             pygame.draw.circle(self.win, valid_color,  (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 10)
 
-    def winner(self, condition):
+
+    def winner(self):
         winner = None
-        red_king = self.board.search_king(RED)
+        red_king = self.board.search_king(RED) 
         blue_king = self.board.search_king(BLUE)
-        if condition == 1:
-            winner = self.turn
+        if red_king != None:
+            red_dist = self.board.calculate_distance_to_corner(RED, red_king[0], red_king[1])
         else:
-            if not blue_king:
-                winner = RED
-            elif not red_king:
-                winner = BLUE
+            red_dist = -1
+        if blue_king != None:
+            blue_dist = self.board.calculate_distance_to_corner(BLUE, blue_king[0], blue_king[1])
+        else:
+            blue_dist = -1
+
+        # king reaching opponent corner
+        if blue_dist == 0:
+            winner = BLUE
+        elif red_dist == 0:
+            winner = RED
+
+        # capturing opponent king
+        if not blue_king:
+            winner = RED
+        elif not red_king:
+            winner = BLUE
+
         return winner
     
     # So the AI will return the new board after his turn

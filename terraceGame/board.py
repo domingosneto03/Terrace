@@ -11,7 +11,6 @@ class Board:
         self.red_count = self.blue_count = 16
         self.dist_to_blue_king = self.dist_to_red_king = 0 # calculated with hypotenuse
         self.blue_dist_to_red_corner = self.red_dist_to_blue_corner = round(math.sqrt(math.pow(7, 2) + math.pow(7, 2))) # initial distance is hypotenuse of the board
-        self.blue_king = self.red_king = True # both kings are still in the game
 
 
     def create_grid(self):
@@ -143,24 +142,47 @@ class Board:
         blue_corner = (7, 0)
 
         if piece_color == RED:
-            if piece_row == blue_corner[0]:
-                self.red_dist_to_blue_corner = abs(piece_col - blue_corner[1]) # if the king is in the same row as the corner
-            elif piece_col == blue_corner[1]:
-                self.red_dist_to_blue_corner = abs(piece_row - blue_corner[0]) # if the king is in the same row as the corner
+
+            # if the king is in the same row as the corner
+            if piece_row == blue_corner[0] and piece_col != blue_corner[1]:
+                self.red_dist_to_blue_corner = abs(piece_col - blue_corner[1])
+
+            # if the king is in the same row as the corner    
+            elif piece_col == blue_corner[1] and piece_row != blue_corner[0]:
+                self.red_dist_to_blue_corner = abs(piece_row - blue_corner[0])
+
+            # if the king is in the corner
+            elif piece_row == blue_corner[0] and piece_col == blue_corner[1]:
+                self.red_dist_to_blue_corner = 0
+
             else:
                 leg1 = abs(piece_row - blue_corner[0])
                 leg2 = abs(piece_col - blue_corner[1])
                 self.red_dist_to_blue_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
+            
+            return self.red_dist_to_blue_corner
+        
         else:
             if piece_color == BLUE:
-                if piece_row == red_corner[0]:
-                    self.blue_dist_to_red_corner = abs(piece_col - red_corner[1]) # if the king is in the same row as the corner
-                elif piece_col == blue_corner[1]:
-                    self.blue_dist_to_red_corner = abs(piece_row - red_corner[0]) # if the king is in the same row as the corner
+
+                # if the king is in the same row as the corner
+                if piece_row == red_corner[0] and piece_col != red_corner[1]:
+                    self.blue_dist_to_red_corner = abs(piece_col - red_corner[1])
+                
+                # if the king is in the same row as the corner
+                elif piece_col == red_corner[1] and piece_col != red_corner[1]:
+                    self.blue_dist_to_red_corner = abs(piece_row - red_corner[0])
+                
+                # if the king is in the corner
+                elif piece_row == red_corner[0] and piece_col == red_corner[1]:
+                    self.blue_dist_to_red_corner = 0
+
                 else:
                     leg1 = abs(piece_row - red_corner[0])
                     leg2 = abs(piece_col - red_corner[1])
                     self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
+                
+                return self.blue_dist_to_red_corner
 
 
     # method to loop through the board and find the king

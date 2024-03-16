@@ -63,9 +63,9 @@ def Menu():
             WIN= None
 
     elif mode=='3':
-        print("Coming soon")
-        run = False
-        WIN = None
+        run=True
+        WIN = pygame.display.set_mode((WIDTH,HEIGHT)) #TODO: I'm guessing WIN will change depending on the mode and difficulty?
+        pygame.display.set_caption('Terrace (Computer vs Computer)')
 
     else:
         run=False
@@ -76,9 +76,9 @@ def Menu():
 # stats of the game to appear at the end - want to make a table with the statistics
 def stats(game):
     print("The Winner is:")
-    if game.winner(game.condition) == BLUE:
+    if game.winner() == BLUE:
         print("BLUE")
-    elif game.winner(game.condition) == RED:
+    elif game.winner() == RED:
         print("RED")
 
 def main():
@@ -91,14 +91,14 @@ def main():
         clock.tick(FPS)
 
         if(mode=='1'):
-            if game.winner(game.condition) != None: # to improve
+            if game.winner() != None: # to improve
                 stats(game)
                 run = False
                 WIN = None
 
         elif (mode=='2'):
             if(difficulty=='1'):
-                if game.winner(game.condition) != None: # to improve
+                if game.winner() != None: # to improve
                     stats(game)
                     run = False
                     WIN = None
@@ -107,7 +107,7 @@ def main():
                     game.ai_move(new_board)
 
             if(difficulty=='2'):
-                if game.winner(game.condition) != None: # to improve
+                if game.winner() != None: # to improve
                     stats(game)
                     run = False
                     WIN = None
@@ -116,7 +116,7 @@ def main():
                     game.ai_move(new_board)
 
             if(difficulty=='3'):
-                if game.winner(game.condition) != None: # to improve
+                if game.winner() != None: # to improve
                     stats(game)
                     run = False
                     WIN = None
@@ -124,18 +124,12 @@ def main():
                     value, new_board = minimax(game.board, 3, RED, game)
                     game.ai_move(new_board)
 
-        # needs a lot of work
+        # needs a lot of work - not yet implemented
         elif(mode=='3'):
-            if game.winner(game.condition) != None: # to improve
+            if game.winner() != None: # to improve
                 stats(game)
                 run = False
                 WIN = None
-            if game.turn ==RED:
-                value, new_board = minimax(game.board, 1, RED, game)
-                game.ai_move(new_board)
-            elif game.turn == BLUE:
-                value, new_board = minimax(game.board, 1, BLUE, game)
-                game.ai_move(new_board)
 
         for event in pygame.event.get():
             
