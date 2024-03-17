@@ -127,9 +127,15 @@ def main():
         # needs a lot of work - not yet implemented
         elif(mode=='3'):
             if game.winner() != None: # to improve
-                stats(game)
-                run = False
-                WIN = None
+                    stats(game)
+                    run = False
+                    WIN = None
+            if game.turn == RED:
+                value, new_board = minimax(game.board, 2, RED, game)
+                game.ai_move(new_board)
+            else:
+                value, new_board = minimax(game.board, 2, BLUE, game)
+                game.ai_move(new_board)
 
         for event in pygame.event.get():
             
