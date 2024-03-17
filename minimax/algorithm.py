@@ -40,7 +40,8 @@ def simulate_move(piece, move, board, game):
         board.remove(target)
 
     board.move(piece, row, col) #simulate the move
-    board.calculate_distance_to_king(game.turn, row, col) # after simulation calculate the distance to the king
+    board.creativity(piece, piece.get_color())
+    board.calculate_distance_to_king(piece.get_color(), row, col) # after simulation calculate the distance to the king
     if piece.get_king_verification():
         board.calculate_distance_to_corner(piece.get_color(), row, col) # after simulation calculate the king's distance to opposite corner
 

@@ -8,9 +8,22 @@ class Board:
         self.grid = []
         self.create_grid()
         self.create_pieces()
-        self.red_count = self.blue_count = 16
-        self.dist_to_blue_king = self.dist_to_red_king = 0 # calculated with hypotenuse
-        self.blue_dist_to_red_corner = self.red_dist_to_blue_corner = round(math.sqrt(math.pow(7, 2) + math.pow(7, 2))) # initial distance is hypotenuse of the board
+
+        self.red_count = 16
+        self.blue_count = 16
+
+        # calculated with hypotenuse
+        self.dist_to_blue_king = 10
+        self.dist_to_red_king = 10
+
+        # initial distance is hypotenuse of the board
+        self.blue_dist_to_red_corner = round(math.sqrt(math.pow(7, 2) + math.pow(7, 2)))
+        self.red_dist_to_blue_corner = round(math.sqrt(math.pow(7, 2) + math.pow(7, 2)))
+
+        # list of pieces and respective number of times used -> contained by lists that store the piece object and number of times used
+        self.blue_used_pieces = []
+        self.red_used_pieces = []
+        self.store_all_pieces()
 
 
     def create_grid(self):
@@ -66,6 +79,20 @@ class Board:
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, True)
 
 
+    # method that stores all pieces and respective times used in a list
+    def store_all_pieces(self):
+        for row in self.grid:
+            for piece in row:
+                if piece != None:
+                    if piece.get_color() == RED:
+                        self.red_used_pieces.append([piece, 0])
+                    else:
+                        self.blue_used_pieces.append([piece, 0])
+        print("done")
+
+
+
+
     def draw_board(self, win):
         win.fill(WHITE)
 
@@ -107,8 +134,8 @@ class Board:
     # method to calculate a distance of a piece to the opponent's king
     # logic: Pythagorean theorem
     # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
-    def calculate_distance_to_king(self, turn, piece_row, piece_col):
-        if turn == RED:
+    def calculate_distance_to_king(self, color, piece_row, piece_col):
+        if color == RED:
             if self.search_king(BLUE):
                 king_row, king_col = self.search_king(BLUE)
                 if piece_row == king_row:
@@ -163,26 +190,24 @@ class Board:
             return self.red_dist_to_blue_corner
         
         else:
-            if piece_color == BLUE:
+            # if the king is in the same row as the corner
+            if piece_row == red_corner[0] and piece_col != red_corner[1]:
+                self.blue_dist_to_red_corner = abs(piece_col - red_corner[1])
+            
+            # if the king is in the same row as the corner
+            elif piece_col == red_corner[1] and piece_col != red_corner[1]:
+                self.blue_dist_to_red_corner = abs(piece_row - red_corner[0])
+            
+            # if the king is in the corner
+            elif piece_row == red_corner[0] and piece_col == red_corner[1]:
+                self.blue_dist_to_red_corner = 0
 
-                # if the king is in the same row as the corner
-                if piece_row == red_corner[0] and piece_col != red_corner[1]:
-                    self.blue_dist_to_red_corner = abs(piece_col - red_corner[1])
-                
-                # if the king is in the same row as the corner
-                elif piece_col == red_corner[1] and piece_col != red_corner[1]:
-                    self.blue_dist_to_red_corner = abs(piece_row - red_corner[0])
-                
-                # if the king is in the corner
-                elif piece_row == red_corner[0] and piece_col == red_corner[1]:
-                    self.blue_dist_to_red_corner = 0
-
-                else:
-                    leg1 = abs(piece_row - red_corner[0])
-                    leg2 = abs(piece_col - red_corner[1])
-                    self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-                
-                return self.blue_dist_to_red_corner
+            else:
+                leg1 = abs(piece_row - red_corner[0])
+                leg2 = abs(piece_col - red_corner[1])
+                self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
+            
+            return self.blue_dist_to_red_corner
 
 
     # method to loop through the board and find the king
@@ -199,6 +224,20 @@ class Board:
         else:
             self.blue_king = False
     
+    # method to check if a piece is being used repeatedly or not -> improve with list
+    def creativity(self, piece, color):
+
+        # red pieces
+        if color == RED:
+            for red_piece in self.red_used_pieces:
+                if red_piece[0] == piece:
+                    red_piece[1] += 1
+
+        # blue pieces
+        else:
+            for blue_piece in self.blue_used_pieces:
+                if blue_piece[0] == piece:
+                    blue_piece[1] += 1
 
     # method to get the valid moves for a piece
     def get_valid_moves(self, piece):
@@ -279,14 +318,43 @@ class Board:
         return pieces
     
 
-    #This needs the most work
     # function should return a score
-    # highest score -> best move for AI
-    # lowest score -> best move for player
+    # highest score -> best move for RED
+    # lowest score -> best move for BLUE
     # always a diff between red and blue team
-    # multiplying by a value has an impact on the score -> the more valuable the evaluaion for the game, higher is the value
+    # multiplying by a value has an impact on the score, according to strategy need
     def evaluate(self):
-        evaluation1 = (-self.dist_to_blue_king * 1) - (-self.dist_to_red_king * 1) # negative values to represent that the higher the distance, the lower the score
-        evaluation2 = (-self.red_dist_to_blue_corner * 1) - (-self.blue_dist_to_red_corner * 1) # negative values to represent that the higher the distance, the lower the score
-        evaluation3 = (self.red_count * 1) - (self.blue_count * 1)
-        return evaluation1 + evaluation2 + evaluation3
+
+        # evaluates how far is the piece of the opposite -> winning condition
+        red_evaluation1 = -self.dist_to_blue_king * 0.5 # negative values to represent that the higher the distance, the lower the score
+        blue_evaluation1 = self.dist_to_red_king * 0.5
+
+        # evaluates how far is the king from the opposite corner -> winning condition
+        red_evaluation2 = -self.red_dist_to_blue_corner * 3 # negative values to represent that the higher the distance, the lower the score
+        blue_evaluation2 = self.blue_dist_to_red_corner * 3
+
+        # evaluates who has more pieces
+        red_evaluation3 = self.red_count * 2
+        blue_evaluation3 = -self.blue_count * 2
+
+        # evaluates if the AI is being diversive with the choice of its pieces
+        red_evaluation4 = 0
+        blue_evaluation4 = 0
+        unique_red_counts = set()
+        unique_blue_counts = set()
+        for piece in self.red_used_pieces:
+            count = piece[1] # number of times piece was used
+            if count > 3:
+                unique_red_counts.add(count) # set is used to avoid duplicate values
+        for piece in self.blue_used_pieces:
+            count = piece[1]
+            if count > 3:
+                unique_blue_counts.add(count)
+        red_evaluation4 = -sum(unique_red_counts) * 1
+        blue_evaluation4 = sum(unique_blue_counts) * 1
+
+        evaluation = red_evaluation1 + red_evaluation2 + red_evaluation3 + red_evaluation4 + blue_evaluation1 + blue_evaluation2 + blue_evaluation3 + blue_evaluation4
+        
+        return evaluation
+    
+        
