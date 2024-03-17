@@ -88,9 +88,6 @@ class Board:
                         self.red_used_pieces.append([piece, 0])
                     else:
                         self.blue_used_pieces.append([piece, 0])
-        print("done")
-
-
 
 
     def draw_board(self, win):
@@ -326,16 +323,16 @@ class Board:
     def evaluate(self):
 
         # evaluates how far is the piece of the opposite -> winning condition
-        red_evaluation1 = -self.dist_to_blue_king * 0.5 # negative values to represent that the higher the distance, the lower the score
-        blue_evaluation1 = self.dist_to_red_king * 0.5
+        red_evaluation1 = -self.dist_to_blue_king * 1 # negative values to represent that the higher the distance, the lower the score
+        blue_evaluation1 = self.dist_to_red_king * 1
 
         # evaluates how far is the king from the opposite corner -> winning condition
         red_evaluation2 = -self.red_dist_to_blue_corner * 3 # negative values to represent that the higher the distance, the lower the score
         blue_evaluation2 = self.blue_dist_to_red_corner * 3
 
         # evaluates who has more pieces
-        red_evaluation3 = self.red_count * 2
-        blue_evaluation3 = -self.blue_count * 2
+        red_evaluation3 = self.red_count * 20
+        blue_evaluation3 = -self.blue_count * 20
 
         # evaluates if the AI is being diversive with the choice of its pieces
         red_evaluation4 = 0
@@ -344,16 +341,19 @@ class Board:
         unique_blue_counts = set()
         for piece in self.red_used_pieces:
             count = piece[1] # number of times piece was used
-            if count > 3:
+            if count > 2:
                 unique_red_counts.add(count) # set is used to avoid duplicate values
         for piece in self.blue_used_pieces:
             count = piece[1]
-            if count > 3:
+            if count > 2:
                 unique_blue_counts.add(count)
         red_evaluation4 = -sum(unique_red_counts) * 1
         blue_evaluation4 = sum(unique_blue_counts) * 1
 
-        evaluation = red_evaluation1 + red_evaluation2 + red_evaluation3 + red_evaluation4 + blue_evaluation1 + blue_evaluation2 + blue_evaluation3 + blue_evaluation4
+        if self.red_count - self.blue_count < 3:
+            evaluation = red_evaluation3 + red_evaluation4 + blue_evaluation3 + blue_evaluation4
+        else:
+            evaluation = red_evaluation1 + red_evaluation2 + red_evaluation3 + blue_evaluation1 + blue_evaluation2 + blue_evaluation3
         
         return evaluation
     
