@@ -56,3 +56,9 @@ class Piece:
     
     def get_king_verification(self):
         return self.isKing
+    
+    def get_row(self):
+        return self.row
+    
+    def get_col(self):
+        return self.col

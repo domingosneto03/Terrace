@@ -5,8 +5,9 @@ RED = (255,0,0)
 BLUE = (0, 0, 255)
 
 def minimax(position, depth, max_player, game):
-    if depth == 0 or game.winner(game.condition) != None:
+    if depth == 0 or game.winner() != None:
         return position.evaluate(), position
+
     
     if max_player:
         maxEval = float('-inf')
@@ -31,15 +32,19 @@ def minimax(position, depth, max_player, game):
 
 
 def simulate_move(piece, move, board, game):
-    # move looks like this ((row, col), None/Piece))
+    # move looks like this ((row, col), None/<Piece>))
     row = move[0][0]
     col = move[0][1]
     target = move[1]
-
-    board.move(piece, row, col)
-    target = move[1]
     if target != None:
-        board.remove(piece)
+        board.remove(target)
+
+    board.move(piece, row, col) #simulate the move
+    board.creativity(piece, piece.get_color())
+    board.calculate_distance_to_king(piece.get_color(), row, col) # after simulation calculate the distance to the king
+    if piece.get_king_verification():
+        board.calculate_distance_to_corner(piece.get_color(), row, col) # after simulation calculate the king's distance to opposite corner
+
     return board
 
 
@@ -49,7 +54,7 @@ def get_all_moves(board, color, game):
     for piece in board.get_all_pieces(color):
         valid_moves = board.get_valid_moves(piece)
         for move in valid_moves.items():
-            # draw_moves(game, board, piece)
+            #draw_moves(game, board, piece)
             temp_board = deepcopy(board)
             temp_piece = temp_board.get_piece(piece.row, piece.col)
             new_board = simulate_move(temp_piece, move, temp_board, game)
@@ -57,11 +62,12 @@ def get_all_moves(board, color, game):
     
     return moves
 
-
-# def draw_moves(game, board, piece):
-#     valid_moves = board.get_valid_moves(piece)
-#     board.draw(game.win)
-#     pygame.draw.circle(game.win, (0,255,0), (piece.x, piece.y), 50, 5)
-#     game.draw_valid_moves(valid_moves.keys())
-#     pygame.display.update()
-#     #pygame.time.delay(100)
+'''
+# for testing
+def draw_moves(game, board, piece):
+    valid_moves = board.get_valid_moves(piece)
+    board.draw_board(game.win)
+    game.draw_valid_moves(valid_moves.keys(), piece.get_color())
+    pygame.display.update()
+    pygame.time.delay(20)
+'''

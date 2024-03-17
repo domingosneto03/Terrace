@@ -8,13 +8,11 @@ class Game:
         self.board = Board()
         self.turn = BLUE
         self.valid_moves = {}
-        self.king_count = 2
         self.win = win # window not winner/wins
-        self.condition = 0 # there is 2 winning conditions - use on winner() method
 
     def update(self):
         self.board.draw_board(self.win)
-        self.draw_valid_moves(self.valid_moves)
+        self.draw_valid_moves(self.valid_moves, self.turn)
         pygame.display.update()
 
     def select(self, row, col):
@@ -35,16 +33,8 @@ class Game:
 
         # moving to a empty space
         if self.selected and piece == 0 and (new_row, new_col) in self.valid_moves:
-            self.board.move(self.selected, new_row, new_col)
-            if self.selected.get_king_verification():
-                if self.selected.get_color() == RED and new_row == 7 and new_col == 0:
-                    self.condition = 1
-                    self.winner(self.condition)
-                    return True
-                elif self.selected.get_color() == BLUE and new_row == 0 and new_col == 7:
-                    self.condition = 1
-                    self.winner(self.condition)
-                    return True
+            self.board.move(self.selected, new_row, new_col)  
+            
             self.change_turn()
 
         # moving to a space with a piece
@@ -53,22 +43,20 @@ class Game:
             if target:
                 self.board.remove(target)
                 self.board.move(self.selected, new_row, new_col)
-                if target.get_king_verification():
-                    self.king_count -= 1
-                    self.condition = 2
-                    self.winner(self.condition)
-                    return True
+                
             self.change_turn()
 
+        # when the selected move is invalid
         elif piece == 0 and (new_row, new_col) not in self.valid_moves:
             self.valid_moves = {} # reset valid moves
             print("Invalid move!")
             return True
+        
         else:
             return False
-        
         return True
-    
+
+
     def change_turn(self):
         self.valid_moves = {} # reset the valid moves
         if self.turn == BLUE:
@@ -77,24 +65,49 @@ class Game:
             self.turn = BLUE
         return self.turn
 
-    def draw_valid_moves(self, moves):
+
+    def draw_valid_moves(self, moves, color):
         for move in moves:
             row, col = move
-            pygame.draw.circle(self.win, GREEN,  (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 10)
+            if color == BLUE:
+                valid_color = PINK
+            else:
+                valid_color = GREEN
+            pygame.draw.circle(self.win, valid_color,  (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 10)
 
-    def winner(self, condition):
+
+    def winner(self):
         winner = None
-        if self.king_count < 2:
-            winner = self.turn
-        if condition == 1:
-            winner = self.turn
+        red_king = self.board.search_king(RED) 
+        blue_king = self.board.search_king(BLUE)
+        if red_king != None:
+            red_dist = self.board.calculate_distance_to_corner(RED, red_king[0], red_king[1])
+        else:
+            red_dist = -1
+        if blue_king != None:
+            blue_dist = self.board.calculate_distance_to_corner(BLUE, blue_king[0], blue_king[1])
+        else:
+            blue_dist = -1
+
+        # king reaching opponent corner
+        if blue_dist == 0:
+            winner = BLUE
+        elif red_dist == 0:
+            winner = RED
+
+        # capturing opponent king
+        if not blue_king:
+            winner = RED
+        elif not red_king:
+            winner = BLUE
+
         return winner
     
-    #So the AI will return the new board after his turn
+    # So the AI will return the new board after his turn
     def get_board(self):
         return self.board
     
-    #Idk yet 
+    # Returns the actual move that the AI decides to make
     def ai_move(self, board):
         self.board= board
         self.change_turn()
