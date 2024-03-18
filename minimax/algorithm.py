@@ -87,8 +87,8 @@ def simulate_move(piece, move, board, game):
             board.calculate_pieces_captured(piece.get_color())
 
     board.move(piece, row, col) #simulate the move
-    board.creativity(piece, piece.get_color())
     board.calculate_distance_to_king(piece.get_color(), row, col) # after simulation calculate the distance to the king
+    board.piece_used(piece, piece.get_color()) # increments the usage of a piece
     if piece.get_king_verification():
         board.calculate_distance_to_corner(piece.get_color(), row, col) # after simulation calculate the king's distance to opposite corner
 
