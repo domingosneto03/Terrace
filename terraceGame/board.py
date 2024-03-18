@@ -134,29 +134,14 @@ class Board:
     # logic: Pythagorean theorem
     # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
     def calculate_distance_to_king(self, color, piece_row, piece_col):
-        if color == RED:
-            if self.search_king(BLUE):
-                king_row, king_col = self.search_king(BLUE)
-                if piece_row == king_row:
-                    self.dist_to_blue_king = abs(piece_col - king_col) # if the king is in the same row
-                elif piece_col == king_col:
-                    self.dist_to_blue_king = abs(piece_row - king_row) # if the king is in the same row
-                else:
-                    leg1 = abs(piece_row - king_row)
-                    leg2 = abs(piece_col - king_col)
-                    self.dist_to_blue_king = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-        else:
-            if self.search_king(RED):
-                king_row, king_col = self.search_king(RED)
-                if piece_row == king_row:
-                    self.dist_to_red_king = abs(piece_col - king_col) # if the king is in the same row
-                elif piece_col == king_col:
-                    self.dist_to_red_king = abs(piece_row - king_row) # if the king is in the same row
-                else:
-                    leg1 = abs(piece_row - king_row)
-                    leg2 = abs(piece_col - king_col)
-                    self.dist_to_red_king = math.floor(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-
+        if self.search_king(BLUE if color == RED else RED):
+            king_row, king_col = self.search_king(BLUE if color == RED else RED)
+            leg1 = abs(piece_row - king_row)
+            leg2 = abs(piece_col - king_col)
+            if color == RED:
+                self.dist_to_blue_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
+            else:
+                self.dist_to_red_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
 
     # method to calculate a distance of the king to the opponent's opposite corner
     # logic: Pythagorean theorem
@@ -168,44 +153,15 @@ class Board:
         blue_corner = (7, 0)
 
         if piece_color == RED:
-
-            # if the king is in the same row as the corner
-            if piece_row == blue_corner[0] and piece_col != blue_corner[1]:
-                self.red_dist_to_blue_corner = abs(piece_col - blue_corner[1])
-
-            # if the king is in the same row as the corner    
-            elif piece_col == blue_corner[1] and piece_row != blue_corner[0]:
-                self.red_dist_to_blue_corner = abs(piece_row - blue_corner[0])
-
-            # if the king is in the corner
-            elif piece_row == blue_corner[0] and piece_col == blue_corner[1]:
-                self.red_dist_to_blue_corner = 0
-
-            else:
-                leg1 = abs(piece_row - blue_corner[0])
-                leg2 = abs(piece_col - blue_corner[1])
-                self.red_dist_to_blue_corner = math.floor(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-            
+            leg1 = abs(piece_row - blue_corner[0])
+            leg2 = abs(piece_col - blue_corner[1])
+            self.red_dist_to_blue_corner = math.floor(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
             return self.red_dist_to_blue_corner
         
         else:
-            # if the king is in the same row as the corner
-            if piece_row == red_corner[0] and piece_col != red_corner[1]:
-                self.blue_dist_to_red_corner = abs(piece_col - red_corner[1])
-            
-            # if the king is in the same row as the corner
-            elif piece_col == red_corner[1] and piece_col != red_corner[1]:
-                self.blue_dist_to_red_corner = abs(piece_row - red_corner[0])
-            
-            # if the king is in the corner
-            elif piece_row == red_corner[0] and piece_col == red_corner[1]:
-                self.blue_dist_to_red_corner = 0
-
-            else:
-                leg1 = abs(piece_row - red_corner[0])
-                leg2 = abs(piece_col - red_corner[1])
-                self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-            
+            leg1 = abs(piece_row - red_corner[0])
+            leg2 = abs(piece_col - red_corner[1])
+            self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
             return self.blue_dist_to_red_corner
         
 
