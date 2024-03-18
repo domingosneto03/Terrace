@@ -61,6 +61,8 @@ def simulate_move(piece, move, board, game):
     target = move[1]
     if target != None:
         board.remove(target)
+        if target.get_color() != piece.get_color():
+            board.calculate_pieces_captured(piece.get_color())
 
     board.move(piece, row, col) #simulate the move
     board.creativity(piece, piece.get_color())

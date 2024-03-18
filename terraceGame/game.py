@@ -42,7 +42,10 @@ class Game:
             target = self.valid_moves[(new_row, new_col)]
             if target:
                 self.board.remove(target)
+                if target.get_color() != self.selected.get_color():
+                    self.board.calculate_pieces_captured(self.selected.get_color()) # calculate pieces captured by the player
                 self.board.move(self.selected, new_row, new_col)
+                
                 
             self.change_turn()
 
