@@ -124,7 +124,6 @@ def main():
                     value, new_board = minimax(game.board, 3, RED, game, float('-inf'), float('inf'))
                     game.ai_move(new_board)
 
-        '''
         # needs a lot of work - not yet implemented
         elif(mode=='3'):
             if game.winner() != None: # to improve
@@ -137,7 +136,7 @@ def main():
             else:
                 value, new_board = minimax(game.board, 2, BLUE, game, float('-inf'), float('inf'))
                 game.ai_move(new_board)
-        '''
+
         
         for event in pygame.event.get():
             

@@ -5,75 +5,37 @@ RED = (255,0,0)
 BLUE = (0, 0, 255)
 
 def minimax(position, depth, player, game, alpha, beta):
-    if depth == 0 or game.winner() != None:
+    if depth == 0 or game.winner() is not None:
         return position.evaluate(), position
 
-    #if player == RED:
-    if player:
+    if player == RED:  # Red player is maximizing
         maxEval = float('-inf')
         best_move = None
         for move in get_all_moves(position, RED, game):
-            evaluation = minimax(move, depth-1, False, game, alpha, beta)[0] # in the recursive call, only maxEval is necessary
+            evaluation = minimax(move, depth - 1, BLUE, game, alpha, beta)[0]
             maxEval = max(maxEval, evaluation)
             if maxEval == evaluation:
                 best_move = move
 
-            # alpha-beta cuts    
             alpha = max(alpha, evaluation)
             if beta <= alpha:
                 break
-        
+
         return maxEval, best_move
-    else:
+    else:  # Blue player is minimizing
         minEval = float('inf')
         best_move = None
         for move in get_all_moves(position, BLUE, game):
-            evaluation = minimax(move, depth-1, True, game, alpha, beta)[0] # in the recursive call, only minEval is necessary
+            evaluation = minimax(move, depth - 1, RED, game, alpha, beta)[0]
             minEval = min(minEval, evaluation)
             if minEval == evaluation:
                 best_move = move
-            
-            # alpha-beta cuts 
+
             beta = min(beta, evaluation)
             if beta <= alpha:
                 break
-        
+
         return minEval, best_move
-
-    '''    
-    # useful for Computer vs Computer
-    else:
-        if player:
-            minEval = float('inf')
-            best_move = None
-            for move in get_all_moves(position, BLUE, game):
-                evaluation = minimax(move, depth-1, False, game, alpha, beta)[0] # in the recursive call, only maxEval is necessary
-                minEval = min(minEval, evaluation)
-                if minEval == evaluation:
-                    best_move = move
-                
-                # alpha-beta cuts 
-                beta = min(beta, evaluation)
-                if beta <= alpha:
-                    break
-
-            return minEval, best_move
-        else:
-            maxEval = float('-inf')
-            best_move = None
-            for move in get_all_moves(position, RED, game):
-                evaluation = minimax(move, depth-1, True, game, alpha, beta)[0] # in the recursive call, only minEval is necessary
-                maxEval = max(maxEval, evaluation)
-                if maxEval == evaluation:
-                    best_move = move
-                
-                # alpha-beta cuts 
-                alpha = max(alpha, evaluation)
-                if beta <= alpha:
-                    break
-            
-            return maxEval, best_move
-    '''
 
 
 def simulate_move(piece, move, board, game):
