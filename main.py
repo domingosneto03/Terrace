@@ -103,7 +103,7 @@ def main():
                     run = False
                     WIN = None
                 if game.turn ==RED:
-                    value, new_board = minimax(game.board, 1, RED, game)
+                    value, new_board = minimax(game.board, 1, RED, game, float('-inf'), float('inf'))
                     game.ai_move(new_board)
 
             if(difficulty=='2'):
@@ -112,7 +112,7 @@ def main():
                     run = False
                     WIN = None
                 if game.turn ==RED:
-                    value, new_board = minimax(game.board, 2, RED, game)
+                    value, new_board = minimax(game.board, 2, RED, game, float('-inf'), float('inf'))
                     game.ai_move(new_board)
 
             if(difficulty=='3'):
@@ -121,7 +121,7 @@ def main():
                     run = False
                     WIN = None
                 if game.turn ==RED:
-                    value, new_board = minimax(game.board, 3, RED, game)
+                    value, new_board = minimax(game.board, 3, RED, game, float('-inf'), float('inf'))
                     game.ai_move(new_board)
 
         # needs a lot of work - not yet implemented
@@ -131,12 +131,13 @@ def main():
                     run = False
                     WIN = None
             if game.turn == RED:
-                value, new_board = minimax(game.board, 2, RED, game)
+                value, new_board = minimax(game.board, 2, RED, game, float('-inf'), float('inf'))
                 game.ai_move(new_board)
             else:
-                value, new_board = minimax(game.board, 2, BLUE, game)
+                value, new_board = minimax(game.board, 2, BLUE, game, float('-inf'), float('inf'))
                 game.ai_move(new_board)
 
+        
         for event in pygame.event.get():
             
             # turn off

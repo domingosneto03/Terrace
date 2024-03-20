@@ -7,7 +7,6 @@ class Board:
     def __init__(self):
         self.grid = []
         self.create_grid()
-        self.create_pieces()
 
         self.red_count = 16
         self.blue_count = 16
@@ -20,10 +19,10 @@ class Board:
         self.blue_dist_to_red_corner = round(math.sqrt(math.pow(7, 2) + math.pow(7, 2)))
         self.red_dist_to_blue_corner = round(math.sqrt(math.pow(7, 2) + math.pow(7, 2)))
 
-        # list of pieces and respective number of times used -> contained by lists that store the piece object and number of times used
-        self.blue_used_pieces = []
-        self.red_used_pieces = []
-        self.store_all_pieces()
+        # dictionary of pieces and respective usage count -> initialized with value 0 when creating pieces
+        self.blue_used_pieces = {}
+        self.red_used_pieces = {}
+        self.create_pieces()
 
         # number of pieces that a player captures from the opponent
         self.blue_capture_red = 0
@@ -44,55 +43,54 @@ class Board:
                     # big red piece
                     if (row == 0 and col < 2) or (row == 1 and col >= COLS - 2):
                         self.grid[row][col] = Piece(row, col, RED, SIZE_BIG, False)
+                        self.red_used_pieces[self.grid[row][col]] = 0
 
                     # medium red piece
                     elif (row == 0 and col >= 2 and col < 4) or (row == 1 and col >= 4 and col < 6):
                         self.grid[row][col] = Piece(row, col, RED, SIZE_MEDIUM, False)
+                        self.red_used_pieces[self.grid[row][col]] = 0
 
                     # small red piece
                     elif (row == 0 and col >= 4 and col < 6) or (row == 1 and col >= 2 and col < 4):
                         self.grid[row][col] = Piece(row, col, RED, SIZE_SMALL, False)
+                        self.red_used_pieces[self.grid[row][col]] = 0
 
                     # smaller red piece
                     elif (row == 0 and col == 6) or (row == 1 and col < 2):
                         self.grid[row][col] = Piece(row, col, RED, SIZE_SMALLER, False)
+                        self.red_used_pieces[self.grid[row][col]] = 0
                     
                     # King red piece
                     else:
                         self.grid[row][col] = Piece(row, col, RED, SIZE_SMALLER, True)
+                        self.red_used_pieces[self.grid[row][col]] = 0
 
                 elif row >= ROWS - 2:
                     # big blue piece
                     if (row == 6 and col < 2) or (row == 7 and col >= COLS - 2):
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_BIG, False)
+                        self.blue_used_pieces[self.grid[row][col]] = 0
 
                     # medium blue piece
                     elif (row == 6 and col >= 2 and col < 4) or (row == 7 and col >= 4 and col < 6):
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_MEDIUM, False)
+                        self.blue_used_pieces[self.grid[row][col]] = 0
 
                     # small blue piece
                     elif (row == 6 and col >= 4 and col < 6) or (row == 7 and col >= 2 and col < 4):
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALL, False)
+                        self.blue_used_pieces[self.grid[row][col]] = 0
 
                     # smaller blue piece
                     elif (row == 6 and col >= COLS - 2) or (row == 7 and col == 1):
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, False)
+                        self.blue_used_pieces[self.grid[row][col]] = 0
                     
                     # King blue piece
                     else:
                         self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, True)
-
-
-    # method that stores all pieces and respective times used in a list
-    def store_all_pieces(self):
-        for row in self.grid:
-            for piece in row:
-                if piece != None:
-                    if piece.get_color() == RED:
-                        self.red_used_pieces.append([piece, 0])
-                    else:
-                        self.blue_used_pieces.append([piece, 0])
-
+                        self.blue_used_pieces[self.grid[row][col]] = 0
+                        
 
     def draw_board(self, win):
         win.fill(WHITE)
@@ -136,29 +134,14 @@ class Board:
     # logic: Pythagorean theorem
     # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
     def calculate_distance_to_king(self, color, piece_row, piece_col):
-        if color == RED:
-            if self.search_king(BLUE):
-                king_row, king_col = self.search_king(BLUE)
-                if piece_row == king_row:
-                    self.dist_to_blue_king = abs(piece_col - king_col) # if the king is in the same row
-                elif piece_col == king_col:
-                    self.dist_to_blue_king = abs(piece_row - king_row) # if the king is in the same row
-                else:
-                    leg1 = abs(piece_row - king_row)
-                    leg2 = abs(piece_col - king_col)
-                    self.dist_to_blue_king = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-        else:
-            if self.search_king(RED):
-                king_row, king_col = self.search_king(RED)
-                if piece_row == king_row:
-                    self.dist_to_red_king = abs(piece_col - king_col) # if the king is in the same row
-                elif piece_col == king_col:
-                    self.dist_to_red_king = abs(piece_row - king_row) # if the king is in the same row
-                else:
-                    leg1 = abs(piece_row - king_row)
-                    leg2 = abs(piece_col - king_col)
-                    self.dist_to_red_king = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-
+        if self.search_king(BLUE if color == RED else RED):
+            king_row, king_col = self.search_king(BLUE if color == RED else RED)
+            leg1 = abs(piece_row - king_row)
+            leg2 = abs(piece_col - king_col)
+            if color == RED:
+                self.dist_to_blue_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
+            else:
+                self.dist_to_red_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
 
     # method to calculate a distance of the king to the opponent's opposite corner
     # logic: Pythagorean theorem
@@ -170,44 +153,15 @@ class Board:
         blue_corner = (7, 0)
 
         if piece_color == RED:
-
-            # if the king is in the same row as the corner
-            if piece_row == blue_corner[0] and piece_col != blue_corner[1]:
-                self.red_dist_to_blue_corner = abs(piece_col - blue_corner[1])
-
-            # if the king is in the same row as the corner    
-            elif piece_col == blue_corner[1] and piece_row != blue_corner[0]:
-                self.red_dist_to_blue_corner = abs(piece_row - blue_corner[0])
-
-            # if the king is in the corner
-            elif piece_row == blue_corner[0] and piece_col == blue_corner[1]:
-                self.red_dist_to_blue_corner = 0
-
-            else:
-                leg1 = abs(piece_row - blue_corner[0])
-                leg2 = abs(piece_col - blue_corner[1])
-                self.red_dist_to_blue_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-            
+            leg1 = abs(piece_row - blue_corner[0])
+            leg2 = abs(piece_col - blue_corner[1])
+            self.red_dist_to_blue_corner = math.floor(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
             return self.red_dist_to_blue_corner
         
         else:
-            # if the king is in the same row as the corner
-            if piece_row == red_corner[0] and piece_col != red_corner[1]:
-                self.blue_dist_to_red_corner = abs(piece_col - red_corner[1])
-            
-            # if the king is in the same row as the corner
-            elif piece_col == red_corner[1] and piece_col != red_corner[1]:
-                self.blue_dist_to_red_corner = abs(piece_row - red_corner[0])
-            
-            # if the king is in the corner
-            elif piece_row == red_corner[0] and piece_col == red_corner[1]:
-                self.blue_dist_to_red_corner = 0
-
-            else:
-                leg1 = abs(piece_row - red_corner[0])
-                leg2 = abs(piece_col - red_corner[1])
-                self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-            
+            leg1 = abs(piece_row - red_corner[0])
+            leg2 = abs(piece_col - red_corner[1])
+            self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
             return self.blue_dist_to_red_corner
         
 
@@ -235,26 +189,21 @@ class Board:
             self.blue_king = False
     
     # method to check if a piece is being used repeatedly or not -> improve with list
-    def creativity(self, piece, color):
+    def piece_used(self, piece, color):
 
         # red pieces
         if color == RED:
-            for red_piece in self.red_used_pieces:
-                if red_piece[0] == piece:
-                    red_piece[1] += 1
+            self.red_used_pieces[piece] += 1
 
         # blue pieces
         else:
-            for blue_piece in self.blue_used_pieces:
-                if blue_piece[0] == piece:
-                    blue_piece[1] += 1
+            self.blue_used_pieces[piece] += 1
 
     # method to get the valid moves for a piece
     def get_valid_moves(self, piece):
         moves = {}
         current_level = COLOR_PATTERN[piece.row][piece.col]
 
-        # Check empty squares on the same level
         for row in range(ROWS):
             for col in range(COLS):
                 if (row, col) != (piece.row, piece.col):
@@ -268,10 +217,12 @@ class Board:
 
                     # moving in a different level
                     else:
+                        row_dir, col_dir = row - piece.row, col - piece.col
+                        if abs(row_dir) >= 2 or abs(col_dir) >= 2: # optimize time by not considering wasteful iterations
+                            continue
                         if not self.cross_center(current_level, target_level):    
                             # moving to a higher level
                             if self.higher_level(piece.row, piece.col, row, col):
-                                row_dir, col_dir = row - piece.row, col - piece.col
                                 if target_piece is None:
                                     # can move either in straight or diagonal direction
                                     if (abs(row_dir) == 1 and col_dir == 0) or (row_dir == 0 and abs(col_dir) == 1) or (abs(row_dir) == 1 and abs(col_dir) == 1): # check if moves only 1 square
@@ -281,11 +232,9 @@ class Board:
                             elif not self.higher_level(piece.row, piece.col, row, col):
                                 # can only move in a straight direction
                                 if target_piece is None:
-                                    row_dir, col_dir = row - piece.row, col - piece.col
                                     if (abs(row_dir) == 1 and col_dir == 0) or (row_dir == 0 and abs(col_dir) == 1): # check if moves only 1 square
                                             moves[(row, col)] = target_piece
                                 else:
-                                    row_dir, col_dir = row - piece.row, col - piece.col
                                     # can capture if the piece is bigger or equal than the opponent and if the direction is diagonal
                                     # cannibalism: can capture pieces from the same team for strategy matters
                                     if not (target_piece.get_king_verification() and piece.get_color() == target_piece.get_color()): # no suicides allowed
@@ -336,8 +285,8 @@ class Board:
     def evaluate(self):
 
         # evaluates how far is the piece of the opposite -> winning condition
-        red_evaluation1 = -self.dist_to_blue_king * 2 # negative values to represent that the higher the distance, the lower the score
-        blue_evaluation1 = self.dist_to_red_king * 2
+        red_evaluation1 = -self.dist_to_blue_king * 1 # negative values to represent that the higher the distance, the lower the score
+        blue_evaluation1 = self.dist_to_red_king * 1
 
         # evaluates how far is the king from the opposite corner -> winning condition
         red_evaluation2 = -self.red_dist_to_blue_corner * 3 # negative values to represent that the higher the distance, the lower the score
@@ -348,22 +297,12 @@ class Board:
         blue_evaluation3 = -self.blue_count * 2
 
         # evaluates if the AI is being diversive with the choice of its pieces
-        red_evaluation4 = 0
-        blue_evaluation4 = 0
-        unique_red_counts = set()
-        unique_blue_counts = set()
-        for piece in self.red_used_pieces:
-            count = piece[1] # number of times piece was used
-            unique_red_counts.add(count) # set is used to avoid duplicate values
-        for piece in self.blue_used_pieces:
-            count = piece[1]
-            unique_blue_counts.add(count)
-        red_evaluation4 = -sum(unique_red_counts) * 2
-        blue_evaluation4 = sum(unique_blue_counts) * 2
+        red_evaluation4 = -sum(set(self.red_used_pieces.values())) * 2
+        blue_evaluation4 = sum(set(self.blue_used_pieces.values())) * 2
 
         # evaluates if the pieces are worth being captured
-        red_evaluation5 = self.red_capture_blue * 7
-        blue_evaluation5 = -self.blue_capture_red * 7
+        red_evaluation5 = self.red_capture_blue * 10
+        blue_evaluation5 = -self.blue_capture_red * 10
 
         
         evaluation = red_evaluation1 + red_evaluation2 + red_evaluation3 + red_evaluation4 + red_evaluation5 + blue_evaluation1 + blue_evaluation2 + blue_evaluation3 + blue_evaluation4 + blue_evaluation5
