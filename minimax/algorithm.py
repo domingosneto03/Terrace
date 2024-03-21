@@ -46,13 +46,14 @@ def simulate_move(piece, move, board, game):
     row = move[0][0]
     col = move[0][1]
     target = deepcopy(move[1])
+
+    temp_board.calculate_distance_to_king(temp_piece.get_color(), row, col) # after simulation calculate the distance to the king
     if target != None:
         temp_board.remove(target)
         if target.get_color() != temp_piece.get_color():
             temp_board.calculate_pieces_captured(temp_piece.get_color())
 
     temp_board.move(temp_piece, row, col) #simulate the move
-    temp_board.calculate_distance_to_king(temp_piece.get_color(), row, col) # after simulation calculate the distance to the king
     temp_board.piece_used(temp_piece, temp_piece.get_color()) # increments the usage of a piece
     if piece.get_king_verification():
         temp_board.calculate_distance_to_corner(temp_piece.get_color(), row, col) # after simulation calculate the king's distance to opposite corner

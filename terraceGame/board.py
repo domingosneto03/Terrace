@@ -130,11 +130,11 @@ class Board:
         if piece.color == BLUE:
             self.blue_count -= 1
             if piece.isKing:
-                self.blue_king_pos = None
+                self.blue_king_pos = (-1, -1)
         else:
             self.red_count -= 1
             if piece.isKing:
-                self.red_king_pos = None
+                self.red_king_pos = (-1, -1)
 
 
     # method to calculate a distance of a piece to the opponent's king
@@ -166,16 +166,7 @@ class Board:
             self.red_capture_blue += 1
         else:
             self.blue_capture_red += 1
-        
 
-    '''
-    # method to loop through the board and find the king
-    def search_king(self, color):
-        for pos, piece in self.grid.items():
-            if piece and piece.get_color() == color and piece.get_king_verification():
-                return pos
-        return None
-    '''
     
     # method to check if a piece is being used repeatedly or not -> improve with list
     def piece_used(self, piece, color):
