@@ -22,7 +22,7 @@ class Game:
                 self.selected = None
                 self.select(row, col)
         piece = self.board.get_piece(row, col)
-        if piece !=0 and piece.get_color() == self.turn:
+        if piece != None and piece.get_color() == self.turn:
             self.selected = piece
             self.valid_moves = self.board.get_valid_moves(piece)
             return True
@@ -32,13 +32,13 @@ class Game:
         piece = self.board.get_piece(new_row, new_col)
 
         # moving to a empty space
-        if self.selected and piece == 0 and (new_row, new_col) in self.valid_moves:
+        if self.selected and piece == None and (new_row, new_col) in self.valid_moves:
             self.board.move(self.selected, new_row, new_col)  
             
             self.change_turn()
 
         # moving to a space with a piece
-        elif self.selected and piece != 0 and (new_row, new_col) in self.valid_moves:
+        elif self.selected and piece != None and (new_row, new_col) in self.valid_moves:
             target = self.valid_moves[(new_row, new_col)]
             if target:
                 self.board.remove(target)
@@ -50,7 +50,7 @@ class Game:
             self.change_turn()
 
         # when the selected move is invalid
-        elif piece == 0 and (new_row, new_col) not in self.valid_moves:
+        elif piece == None and (new_row, new_col) not in self.valid_moves:
             self.valid_moves = {} # reset valid moves
             print("Invalid move!")
             return True
@@ -81,13 +81,13 @@ class Game:
 
     def winner(self):
         winner = None
-        red_king = self.board.search_king(RED) 
-        blue_king = self.board.search_king(BLUE)
-        if red_king != None:
+        red_king = self.board.red_king_pos 
+        blue_king = self.board.blue_king_pos
+        if red_king != (-1, -1):
             red_dist = self.board.calculate_distance_to_corner(RED, red_king[0], red_king[1])
         else:
             red_dist = -1
-        if blue_king != None:
+        if blue_king != (-1, -1):
             blue_dist = self.board.calculate_distance_to_corner(BLUE, blue_king[0], blue_king[1])
         else:
             blue_dist = -1
@@ -99,9 +99,9 @@ class Game:
             winner = RED
 
         # capturing opponent king
-        if not blue_king:
+        if blue_king == (-1, -1):
             winner = RED
-        elif not red_king:
+        elif red_king == (-1, -1):
             winner = BLUE
 
         return winner

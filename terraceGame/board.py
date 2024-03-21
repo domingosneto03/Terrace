@@ -5,7 +5,7 @@ from terraceGame.piece import Piece
 
 class Board:
     def __init__(self):
-        self.grid = []
+        self.grid = {}
         self.create_grid()
 
         self.red_count = 16
@@ -28,12 +28,15 @@ class Board:
         self.blue_capture_red = 0
         self.red_capture_blue = 0
 
+        # positions of both kings
+        self.red_king_pos = (0, 7)
+        self.blue_king_pos = (7, 0)
+
 
     def create_grid(self):
         for row in range(ROWS):
-            self.grid.append([])
             for col in range(COLS):
-                self.grid[row].append(None)
+                self.grid[(row, col)] = None
 
 
     def create_pieces(self):
@@ -42,54 +45,54 @@ class Board:
                 if row < 2:
                     # big red piece
                     if (row == 0 and col < 2) or (row == 1 and col >= COLS - 2):
-                        self.grid[row][col] = Piece(row, col, RED, SIZE_BIG, False)
-                        self.red_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, RED, SIZE_BIG, False)
+                        self.red_used_pieces[self.grid[(row, col)]] = 0
 
                     # medium red piece
                     elif (row == 0 and col >= 2 and col < 4) or (row == 1 and col >= 4 and col < 6):
-                        self.grid[row][col] = Piece(row, col, RED, SIZE_MEDIUM, False)
-                        self.red_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, RED, SIZE_MEDIUM, False)
+                        self.red_used_pieces[self.grid[(row, col)]] = 0
 
                     # small red piece
                     elif (row == 0 and col >= 4 and col < 6) or (row == 1 and col >= 2 and col < 4):
-                        self.grid[row][col] = Piece(row, col, RED, SIZE_SMALL, False)
-                        self.red_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, RED, SIZE_SMALL, False)
+                        self.red_used_pieces[self.grid[(row, col)]] = 0
 
                     # smaller red piece
                     elif (row == 0 and col == 6) or (row == 1 and col < 2):
-                        self.grid[row][col] = Piece(row, col, RED, SIZE_SMALLER, False)
-                        self.red_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, RED, SIZE_SMALLER, False)
+                        self.red_used_pieces[self.grid[(row, col)]] = 0
                     
                     # King red piece
                     else:
-                        self.grid[row][col] = Piece(row, col, RED, SIZE_SMALLER, True)
-                        self.red_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, RED, SIZE_SMALLER, True)
+                        self.red_used_pieces[self.grid[(row, col)]] = 0
 
                 elif row >= ROWS - 2:
                     # big blue piece
                     if (row == 6 and col < 2) or (row == 7 and col >= COLS - 2):
-                        self.grid[row][col] = Piece(row, col, BLUE, SIZE_BIG, False)
-                        self.blue_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, BLUE, SIZE_BIG, False)
+                        self.blue_used_pieces[self.grid[(row, col)]] = 0
 
                     # medium blue piece
                     elif (row == 6 and col >= 2 and col < 4) or (row == 7 and col >= 4 and col < 6):
-                        self.grid[row][col] = Piece(row, col, BLUE, SIZE_MEDIUM, False)
-                        self.blue_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, BLUE, SIZE_MEDIUM, False)
+                        self.blue_used_pieces[self.grid[(row, col)]] = 0
 
                     # small blue piece
                     elif (row == 6 and col >= 4 and col < 6) or (row == 7 and col >= 2 and col < 4):
-                        self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALL, False)
-                        self.blue_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, BLUE, SIZE_SMALL, False)
+                        self.blue_used_pieces[self.grid[(row, col)]] = 0
 
                     # smaller blue piece
                     elif (row == 6 and col >= COLS - 2) or (row == 7 and col == 1):
-                        self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, False)
-                        self.blue_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, BLUE, SIZE_SMALLER, False)
+                        self.blue_used_pieces[self.grid[(row, col)]] = 0
                     
                     # King blue piece
                     else:
-                        self.grid[row][col] = Piece(row, col, BLUE, SIZE_SMALLER, True)
-                        self.blue_used_pieces[self.grid[row][col]] = 0
+                        self.grid[(row, col)] = Piece(row, col, BLUE, SIZE_SMALLER, True)
+                        self.blue_used_pieces[self.grid[(row, col)]] = 0
                         
 
     def draw_board(self, win):
@@ -100,7 +103,7 @@ class Board:
                 color = COLOR_PATTERN[row][col]
                 pygame.draw.rect(win, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 pygame.draw.rect(win, BLACK, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 1)
-                piece = self.grid[row][col]
+                piece = self.grid[(row,col)]
                 if piece:
                     piece.draw(win)
         pygame.draw.line(win, BLACK, (0, HEIGHT // 2), (WIDTH, HEIGHT // 2), 3) # Draw the horizontal line to divide the two halfs
@@ -108,61 +111,53 @@ class Board:
 
     # switch coordinates on board with the move
     def move(self, piece, new_row, new_col):
-        self.grid[piece.row][piece.col], self.grid[new_row][new_col] = self.grid[new_row][new_col], self.grid[piece.row][piece.col]
+        old_pos = (piece.row, piece.col)
+        new_pos = (new_row, new_col)
+        self.grid[old_pos] = None
+        self.grid[new_pos] = piece
         piece.move(new_row, new_col)
 
 
     # method to get the piece
     def get_piece(self, row, col):
-        position =  self.grid[row][col]
-        if position is None:
-            return 0
-        else:
-            return self.grid[row][col]
+        return self.grid.get((row, col), None)
 
 
     # method o remove a piece from the board
     def remove(self, piece):
-        self.grid[piece.row][piece.col] = None
-        if piece.get_color() == BLUE:
+        pos = (piece.row, piece.col)
+        self.grid[pos] = None
+        if piece.color == BLUE:
             self.blue_count -= 1
+            if piece.isKing:
+                self.blue_king_pos = (-1, -1)
         else:
             self.red_count -= 1
+            if piece.isKing:
+                self.red_king_pos = (-1, -1)
 
 
     # method to calculate a distance of a piece to the opponent's king
     # logic: Pythagorean theorem
     # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
     def calculate_distance_to_king(self, color, piece_row, piece_col):
-        if self.search_king(BLUE if color == RED else RED):
-            king_row, king_col = self.search_king(BLUE if color == RED else RED)
-            leg1 = abs(piece_row - king_row)
-            leg2 = abs(piece_col - king_col)
-            if color == RED:
-                self.dist_to_blue_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
-            else:
-                self.dist_to_red_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
+        target_pos = self.red_king_pos if color == RED else self.blue_king_pos
+        leg1 = abs(piece_row - target_pos[0])
+        leg2 = abs(piece_col - target_pos[1])
+        return round(math.sqrt(leg1 ** 2 + leg2 ** 2))
+
 
     # method to calculate a distance of the king to the opponent's opposite corner
     # logic: Pythagorean theorem
     # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
     def calculate_distance_to_corner(self, piece_color, piece_row, piece_col):
-
-        # (row, col)
-        red_corner = (0, 7)
-        blue_corner = (7, 0)
-
+        target_corner = (0, COLS - 1) if piece_color == RED else (ROWS - 1, 0)
+        leg1 = abs(piece_row - target_corner[0])
+        leg2 = abs(piece_col - target_corner[1])
         if piece_color == RED:
-            leg1 = abs(piece_row - blue_corner[0])
-            leg2 = abs(piece_col - blue_corner[1])
-            self.red_dist_to_blue_corner = math.floor(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-            return self.red_dist_to_blue_corner
-        
+            self.red_dist_to_blue_corner = math.floor(math.sqrt(leg1 ** 2 + leg2 ** 2))
         else:
-            leg1 = abs(piece_row - red_corner[0])
-            leg2 = abs(piece_col - red_corner[1])
-            self.blue_dist_to_red_corner = round(math.sqrt(math.pow(leg1, 2) + math.pow(leg2, 2))) # distance is rounded to unit
-            return self.blue_dist_to_red_corner
+            self.blue_dist_to_red_corner = math.floor(math.sqrt(leg1 ** 2 + leg2 ** 2))
         
 
     # method to calculate the number of pieces captured by a team (without cannibalism)
@@ -171,33 +166,12 @@ class Board:
             self.red_capture_blue += 1
         else:
             self.blue_capture_red += 1
-        
 
-
-    # method to loop through the board and find the king
-    def search_king(self, color):
-        for row in range(ROWS):
-            for col in range(COLS):
-                piece = self.grid[row][col]
-                if piece != None:
-                    if piece.get_king_verification():
-                        if piece.get_color() == color:
-                            return row, col
-        if color == RED:
-            self.red_king = False
-        else:
-            self.blue_king = False
     
     # method to check if a piece is being used repeatedly or not -> improve with list
     def piece_used(self, piece, color):
-
-        # red pieces
-        if color == RED:
-            self.red_used_pieces[piece] += 1
-
-        # blue pieces
-        else:
-            self.blue_used_pieces[piece] += 1
+        used_pieces = self.red_used_pieces if color == RED else self.blue_used_pieces
+        used_pieces[piece] += 1
 
     # method to get the valid moves for a piece
     def get_valid_moves(self, piece):
@@ -207,7 +181,7 @@ class Board:
         for row in range(ROWS):
             for col in range(COLS):
                 if (row, col) != (piece.row, piece.col):
-                    target_piece = self.grid[row][col]
+                    target_piece = self.grid[(row,col)]
                     target_level = COLOR_PATTERN[row][col]
 
                     # moving in the same level
@@ -247,6 +221,7 @@ class Board:
     def higher_level(self, current_row, current_col, target_row, target_col):
         current_level = BOARD_LEVEL_PATTERN[current_row][current_col]
         target_level = BOARD_LEVEL_PATTERN[target_row][target_col]
+
         if target_level > current_level: # moving to higher level
             return True 
         elif target_level < current_level: # moving to lower level
@@ -268,13 +243,8 @@ class Board:
         return False
     
     # function to return all pieces
-    def get_all_pieces(self,color):
-        pieces= []
-        for row in self.grid:
-            for piece in row:
-                if piece!=None and piece.get_color()==color:
-                    pieces.append(piece)
-        return pieces
+    def get_all_pieces(self, color):
+        return [piece for piece in self.grid.values() if piece and piece.get_color() == color]
     
 
     # function should return a score
@@ -300,10 +270,10 @@ class Board:
         red_evaluation4 = -sum(set(self.red_used_pieces.values())) * 2
         blue_evaluation4 = sum(set(self.blue_used_pieces.values())) * 2
 
+        
         # evaluates if the pieces are worth being captured
         red_evaluation5 = self.red_capture_blue * 10
         blue_evaluation5 = -self.blue_capture_red * 10
-
         
         evaluation = red_evaluation1 + red_evaluation2 + red_evaluation3 + red_evaluation4 + red_evaluation5 + blue_evaluation1 + blue_evaluation2 + blue_evaluation3 + blue_evaluation4 + blue_evaluation5
         return evaluation

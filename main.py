@@ -85,51 +85,24 @@ def main():
     mode, WIN, run, difficulty = Menu()
     clock = pygame.time.Clock()
     game = Game(WIN)
+    ai_difficulty = int(difficulty) if mode == '2' else 0  # Convert difficulty to integer for AI
 
     
     while run:
         clock.tick(FPS)
 
-        if(mode=='1'):
-            if game.winner() != None: # to improve
+        if mode == '1' or mode == '2' or mode == '3':
+            if game.winner() is not None:
                 stats(game)
                 run = False
                 WIN = None
 
-        elif (mode=='2'):
-            if(difficulty=='1'):
-                if game.winner() != None: # to improve
-                    stats(game)
-                    run = False
-                    WIN = None
-                if game.turn ==RED:
-                    value, new_board = minimax(game.board, 1, RED, game, float('-inf'), float('inf'))
-                    game.ai_move(new_board)
+        if mode == '2':
+            if game.turn == RED:
+                value, new_board = minimax(game.board, ai_difficulty, RED, game, float('-inf'), float('inf'))
+                game.ai_move(new_board)
 
-            if(difficulty=='2'):
-                if game.winner() != None: # to improve
-                    stats(game)
-                    run = False
-                    WIN = None
-                if game.turn ==RED:
-                    value, new_board = minimax(game.board, 2, RED, game, float('-inf'), float('inf'))
-                    game.ai_move(new_board)
-
-            if(difficulty=='3'):
-                if game.winner() != None: # to improve
-                    stats(game)
-                    run = False
-                    WIN = None
-                if game.turn ==RED:
-                    value, new_board = minimax(game.board, 3, RED, game, float('-inf'), float('inf'))
-                    game.ai_move(new_board)
-
-        # needs a lot of work - not yet implemented
         elif(mode=='3'):
-            if game.winner() != None: # to improve
-                    stats(game)
-                    run = False
-                    WIN = None
             if game.turn == RED:
                 value, new_board = minimax(game.board, 2, RED, game, float('-inf'), float('inf'))
                 game.ai_move(new_board)
