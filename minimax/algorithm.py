@@ -39,22 +39,25 @@ def minimax(position, depth, player, game, alpha, beta):
 
 
 def simulate_move(piece, move, board, game):
+    temp_board = deepcopy(board)
+    temp_piece = temp_board.get_piece(piece.row, piece.col)
+    
     # move looks like this ((row, col), None/<Piece>))
     row = move[0][0]
     col = move[0][1]
-    target = move[1]
+    target = deepcopy(move[1])
     if target != None:
-        board.remove(target)
-        if target.get_color() != piece.get_color():
-            board.calculate_pieces_captured(piece.get_color())
+        temp_board.remove(target)
+        #if target.get_color() != temp_piece.get_color():
+            #temp_board.calculate_pieces_captured(temp_piece.get_color())
 
-    board.move(piece, row, col) #simulate the move
-    board.calculate_distance_to_king(piece.get_color(), row, col) # after simulation calculate the distance to the king
-    board.piece_used(piece, piece.get_color()) # increments the usage of a piece
+    temp_board.move(temp_piece, row, col) #simulate the move
+    #temp_board.calculate_distance_to_king(temp_piece.get_color(), row, col) # after simulation calculate the distance to the king
+    temp_board.piece_used(temp_piece, temp_piece.get_color()) # increments the usage of a piece
     if piece.get_king_verification():
-        board.calculate_distance_to_corner(piece.get_color(), row, col) # after simulation calculate the king's distance to opposite corner
+        temp_board.calculate_distance_to_corner(temp_piece.get_color(), row, col) # after simulation calculate the king's distance to opposite corner
 
-    return board
+    return temp_board
 
 
 def get_all_moves(board, color, game):

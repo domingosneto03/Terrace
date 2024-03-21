@@ -22,7 +22,7 @@ class Game:
                 self.selected = None
                 self.select(row, col)
         piece = self.board.get_piece(row, col)
-        if piece !=0 and piece.get_color() == self.turn:
+        if piece != None and piece.get_color() == self.turn:
             self.selected = piece
             self.valid_moves = self.board.get_valid_moves(piece)
             return True
@@ -32,13 +32,13 @@ class Game:
         piece = self.board.get_piece(new_row, new_col)
 
         # moving to a empty space
-        if self.selected and piece == 0 and (new_row, new_col) in self.valid_moves:
+        if self.selected and piece == None and (new_row, new_col) in self.valid_moves:
             self.board.move(self.selected, new_row, new_col)  
             
             self.change_turn()
 
         # moving to a space with a piece
-        elif self.selected and piece != 0 and (new_row, new_col) in self.valid_moves:
+        elif self.selected and piece != None and (new_row, new_col) in self.valid_moves:
             target = self.valid_moves[(new_row, new_col)]
             if target:
                 self.board.remove(target)
@@ -50,7 +50,7 @@ class Game:
             self.change_turn()
 
         # when the selected move is invalid
-        elif piece == 0 and (new_row, new_col) not in self.valid_moves:
+        elif piece == None and (new_row, new_col) not in self.valid_moves:
             self.valid_moves = {} # reset valid moves
             print("Invalid move!")
             return True
