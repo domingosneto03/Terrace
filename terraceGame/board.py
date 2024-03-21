@@ -28,6 +28,10 @@ class Board:
         self.blue_capture_red = 0
         self.red_capture_blue = 0
 
+        # positions of both kings
+        self.red_king_pos = (0, 7)
+        self.blue_king_pos = (7, 0)
+
 
     def create_grid(self):
         for row in range(ROWS):
@@ -125,25 +129,22 @@ class Board:
         self.grid[pos] = None
         if piece.color == BLUE:
             self.blue_count -= 1
+            if piece.isKing:
+                self.blue_king_pos = None
         else:
             self.red_count -= 1
+            if piece.isKing:
+                self.red_king_pos = None
 
 
     # method to calculate a distance of a piece to the opponent's king
     # logic: Pythagorean theorem
     # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
     def calculate_distance_to_king(self, color, piece_row, piece_col):
-        target_color = BLUE if color == RED else RED
-        for row in range(ROWS):
-            for col in range(COLS):
-                if self.grid[(row, col)] and self.grid[(row, col)].color == target_color and self.grid[(row, col)].isKing:
-                    leg1 = abs(piece_row - row)
-                    leg2 = abs(piece_col - col)
-                    if color == RED:
-                        self.dist_to_blue_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
-                    else:
-                        self.dist_to_red_king = round(math.sqrt(leg1 ** 2 + leg2 ** 2))
-                    return
+        target_pos = self.red_king_pos if color == RED else self.blue_king_pos
+        leg1 = abs(piece_row - target_pos[0])
+        leg2 = abs(piece_col - target_pos[1])
+        return round(math.sqrt(leg1 ** 2 + leg2 ** 2))
 
 
     # method to calculate a distance of the king to the opponent's opposite corner
@@ -167,13 +168,14 @@ class Board:
             self.blue_capture_red += 1
         
 
-
+    '''
     # method to loop through the board and find the king
     def search_king(self, color):
         for pos, piece in self.grid.items():
             if piece and piece.get_color() == color and piece.get_king_verification():
                 return pos
         return None
+    '''
     
     # method to check if a piece is being used repeatedly or not -> improve with list
     def piece_used(self, piece, color):

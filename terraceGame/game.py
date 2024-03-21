@@ -81,8 +81,8 @@ class Game:
 
     def winner(self):
         winner = None
-        red_king = self.board.search_king(RED) 
-        blue_king = self.board.search_king(BLUE)
+        red_king = self.board.red_king_pos 
+        blue_king = self.board.blue_king_pos
         if red_king != None:
             red_dist = self.board.calculate_distance_to_corner(RED, red_king[0], red_king[1])
         else:
@@ -99,9 +99,9 @@ class Game:
             winner = RED
 
         # capturing opponent king
-        if not blue_king:
+        if blue_king == None:
             winner = RED
-        elif not red_king:
+        elif red_king == None:
             winner = BLUE
 
         return winner
