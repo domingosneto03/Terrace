@@ -48,7 +48,7 @@ def Menu():
 
         if difficulty=='1':
             run=True
-            WIN = pygame.display.set_mode((WIDTH,HEIGHT)) #TODO: I'm guessing WIN will change depending on the mode and difficulty?
+            WIN = pygame.display.set_mode((WIDTH,HEIGHT)) 
             pygame.display.set_caption('Terrace (Player VS Easy Computer)')
         elif difficulty=='2':
             run=True
@@ -64,7 +64,7 @@ def Menu():
 
     elif mode=='3':
         run=True
-        WIN = pygame.display.set_mode((WIDTH,HEIGHT)) #TODO: I'm guessing WIN will change depending on the mode and difficulty?
+        WIN = pygame.display.set_mode((WIDTH,HEIGHT)) 
         pygame.display.set_caption('Terrace (Computer vs Computer)')
 
     else:
@@ -81,50 +81,87 @@ def stats(game):
     elif game.winner() == RED:
         print("RED")
 
+    def get_hint():
+        print("hint") #Im guessing will use minimax but inverted infinities and maybe use the function draw move to show the hint
+    
+
+
 def main():
-    mode, WIN, run, difficulty = Menu()
-    clock = pygame.time.Clock()
-    game = Game(WIN)
-    ai_difficulty = int(difficulty) if mode == '2' else 0  # Convert difficulty to integer for AI
+    red_wins = 0
+    blue_wins = 0
+    total_games = 0
 
-    
-    while run:
-        clock.tick(FPS)
+    while True:  # Main loop for playing multiple games
+        total_games += 1  # Increment total games played
+        mode, WIN, run, difficulty = Menu()
+        if run is False:  # Check if the user chose to quit
+            break
 
-        if mode == '1' or mode == '2' or mode == '3':
-            if game.winner() is not None:
-                stats(game)
-                run = False
-                WIN = None
+        clock = pygame.time.Clock()
+        game = Game(WIN)
+        ai_difficulty = int(difficulty) if mode == '2' else 0  # Convert difficulty to integer for AI
 
-        if mode == '2':
-            if game.turn == RED:
-                value, new_board = minimax(game.board, ai_difficulty, RED, game, float('-inf'), float('inf'))
-                game.ai_move(new_board)
+        while run:
+            clock.tick(FPS)
 
-        elif(mode=='3'):
-            if game.turn == RED:
-                value, new_board = minimax(game.board, 2, RED, game, float('-inf'), float('inf'))
-                game.ai_move(new_board)
+            if mode == '1' or mode == '2' or mode == '3':
+                if game.winner() is not None:
+                    if game.winner() == RED:
+                        red_wins += 1
+                    elif game.winner() == BLUE:
+                        blue_wins += 1
+
+                    stats(game)
+                    run = False
+                    WIN = None
+
+            if mode == '2':
+                if game.turn == RED:
+                    value, new_board = minimax(game.board, ai_difficulty, RED, game, float('-inf'), float('inf'))
+                    game.ai_move(new_board)
+
+            elif mode == '3':
+                if game.turn == RED:
+                    value, new_board = minimax(game.board, 2, RED, game, float('-inf'), float('inf'))
+                    game.ai_move(new_board)
+                else:
+                    value, new_board = minimax(game.board, 2, BLUE, game, float('-inf'), float('inf'))
+                    game.ai_move(new_board)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    return  # Exiting the function, which will end the loop and thus exit the game
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    row, col = get_row_col_from_mouse(pos)
+                    game.select(row, col)
+
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_h and game.turn == BLUE:
+                    # # If 'H' is pressed during the player's turn, show hint
+                    # hint = game.get_hint()
+                    # if hint:
+                        print("Hint: Move piece at")
+
+            game.update()
+
+        print("Total Games Played:", total_games)
+        print("Red Wins:", red_wins)
+        print("Blue Wins:", blue_wins)
+
+        while True:  # Loop until valid input is provided
+            play_again = input("Do you want to play again? (Y/N): ").strip().lower()
+            if play_again == 'y' or play_again == 'n':
+                break  # Valid input provided, exit the loop
             else:
-                value, new_board = minimax(game.board, 2, BLUE, game, float('-inf'), float('inf'))
-                game.ai_move(new_board)
+                print("Invalid input. Please enter 'Y' to play again or 'N' to quit.")
 
-        
-        for event in pygame.event.get():
-            
-            # turn off
-            if event.type == pygame.QUIT:
-                run = False
+        if play_again != 'y':
+            break  # Exit the main loop and end the game
 
-            # select with mouse
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                row, col = get_row_col_from_mouse(pos)
-                game.select(row, col)
-
-        game.update()
-    
     pygame.quit()
+
+
 
 main()
