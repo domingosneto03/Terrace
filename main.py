@@ -3,6 +3,7 @@ import pygame
 from terraceGame.constants import *
 from terraceGame.game import Game
 from minimax.algorithm import minimax
+from mcts.algorithm import mcts_search
 from terraceGame.board import *
 
 FPS = 60 # frames per second
@@ -130,9 +131,16 @@ def main():
                     WIN = None
 
             if mode == '2':
-                if game.turn == RED:
-                    value, new_board = minimax(game.board, ai_difficulty, RED, game, float('-inf'), float('inf'))
-                    game.ai_move(new_board)
+                if ai_difficulty > 0 and ai_difficulty <= 2:
+                    if game.turn == RED:
+                        value, new_board = minimax(game.board, ai_difficulty, RED, game, float('-inf'), float('inf'))
+                        game.ai_move(new_board)
+                else:
+                    if game.turn == RED:
+                        # Use MCTS for AI move
+                        pass
+
+
 
             elif mode == '3':
                 if game.turn == RED:
