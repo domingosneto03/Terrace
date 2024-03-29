@@ -1,7 +1,9 @@
+import random
 import pygame
 import math
 from terraceGame.constants import *
 from terraceGame.piece import Piece
+from copy import deepcopy
 
 class Board:
     def __init__(self):
@@ -33,6 +35,9 @@ class Board:
         self.blue_king_pos = (7, 0)
 
 
+    ######################## BOARD CREATION AND METHODS ########################
+     
+        
     def create_grid(self):
         for row in range(ROWS):
             for col in range(COLS):
@@ -137,42 +142,6 @@ class Board:
                 self.red_king_pos = (-1, -1)
 
 
-    # method to calculate a distance of a piece to the opponent's king
-    # logic: Pythagorean theorem
-    # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
-    def calculate_distance_to_king(self, color, piece_row, piece_col):
-        target_pos = self.red_king_pos if color == RED else self.blue_king_pos
-        leg1 = abs(piece_row - target_pos[0])
-        leg2 = abs(piece_col - target_pos[1])
-        return round(math.sqrt(leg1 ** 2 + leg2 ** 2))
-
-
-    # method to calculate a distance of the king to the opponent's opposite corner
-    # logic: Pythagorean theorem
-    # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
-    def calculate_distance_to_corner(self, piece_color, piece_row, piece_col):
-        target_corner = (0, COLS - 1) if piece_color == RED else (ROWS - 1, 0)
-        leg1 = abs(piece_row - target_corner[0])
-        leg2 = abs(piece_col - target_corner[1])
-        if piece_color == RED:
-            self.red_dist_to_blue_corner = math.floor(math.sqrt(leg1 ** 2 + leg2 ** 2))
-        else:
-            self.blue_dist_to_red_corner = math.floor(math.sqrt(leg1 ** 2 + leg2 ** 2))
-        
-
-    # method to calculate the number of pieces captured by a team (without cannibalism)
-    def calculate_pieces_captured(self, color):
-        if color == RED:
-            self.red_capture_blue += 1
-        else:
-            self.blue_capture_red += 1
-
-    
-    # method to check if a piece is being used repeatedly or not -> improve with list
-    def piece_used(self, piece, color):
-        used_pieces = self.red_used_pieces if color == RED else self.blue_used_pieces
-        used_pieces[piece] += 1
-
     # method to get the valid moves for a piece
     def get_valid_moves(self, piece):
         moves = {}
@@ -242,6 +211,47 @@ class Board:
             return True
         return False
     
+
+    ######################## METHODS USED BY AI: MINIMAX ########################
+
+
+    # method to calculate a distance of a piece to the opponent's king
+    # logic: Pythagorean theorem
+    # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
+    def calculate_distance_to_king(self, color, piece_row, piece_col):
+        target_pos = self.red_king_pos if color == RED else self.blue_king_pos
+        leg1 = abs(piece_row - target_pos[0])
+        leg2 = abs(piece_col - target_pos[1])
+        return round(math.sqrt(leg1 ** 2 + leg2 ** 2))
+
+
+    # method to calculate a distance of the king to the opponent's opposite corner
+    # logic: Pythagorean theorem
+    # calculate the number of rows (leg1) and columns (leg2) left to reach the king piece and determine the distance (hypotenuse)
+    def calculate_distance_to_corner(self, piece_color, piece_row, piece_col):
+        target_corner = (0, COLS - 1) if piece_color == RED else (ROWS - 1, 0)
+        leg1 = abs(piece_row - target_corner[0])
+        leg2 = abs(piece_col - target_corner[1])
+        if piece_color == RED:
+            self.red_dist_to_blue_corner = math.floor(math.sqrt(leg1 ** 2 + leg2 ** 2))
+        else:
+            self.blue_dist_to_red_corner = math.floor(math.sqrt(leg1 ** 2 + leg2 ** 2))
+        
+
+    # method to calculate the number of pieces captured by a team (without cannibalism)
+    def calculate_pieces_captured(self, color):
+        if color == RED:
+            self.red_capture_blue += 1
+        else:
+            self.blue_capture_red += 1
+
+    
+    # method to check if a piece is being used repeatedly or not -> improve with list
+    def piece_used(self, piece, color):
+        used_pieces = self.red_used_pieces if color == RED else self.blue_used_pieces
+        used_pieces[piece] += 1
+
+    
     # function to return all pieces
     def get_all_pieces(self, color):
         return [piece for piece in self.grid.values() if piece and piece.get_color() == color]
@@ -278,4 +288,63 @@ class Board:
         evaluation = red_evaluation1 + red_evaluation2 + red_evaluation3 + red_evaluation4 + red_evaluation5 + blue_evaluation1 + blue_evaluation2 + blue_evaluation3 + blue_evaluation4 + blue_evaluation5
         return evaluation
     
-        
+    ######################## METHODS USED BY AI: MCTS ########################
+    
+
+    def is_game_over(self):
+        return self.get_winner() is not None
+
+
+    def clone(self):
+        cloned_board = deepcopy(Board())
+        return cloned_board
+
+
+    def get_possible_actions(self):
+        actions = []
+
+        for piece in self.get_all_pieces(RED):
+            valid_moves = self.get_valid_moves(piece)
+            for move, target in valid_moves.items():
+                actions.append((piece, move, target))
+        return actions
+
+
+    def get_random_action(self):
+        actions = self.get_possible_actions()
+        return random.choice(actions) if actions else None
+
+
+    def apply_action(self, action):
+        piece, new_pos, target_piece = action
+        self.move(piece, *new_pos)
+        if target_piece:
+            self.remove(target_piece)
+
+
+    def get_winner(self):
+        winner = None
+        red_king = deepcopy(self.red_king_pos) 
+        blue_king = deepcopy(self.blue_king_pos)
+        if red_king != (-1, -1):
+            red_dist = deepcopy(self.calculate_distance_to_corner(RED, red_king[0], red_king[1]))
+        else:
+            red_dist = -1
+        if blue_king != (-1, -1):
+            blue_dist = deepcopy(self.calculate_distance_to_corner(BLUE, blue_king[0], blue_king[1]))
+        else:
+            blue_dist = -1
+
+        # king reaching opponent corner
+        if blue_dist == 0:
+            winner = BLUE
+        elif red_dist == 0:
+            winner = RED
+
+        # capturing opponent king
+        if blue_king == (-1, -1):
+            winner = RED
+        elif red_king == (-1, -1):
+            winner = BLUE
+
+        return winner

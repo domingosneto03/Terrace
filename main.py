@@ -138,7 +138,8 @@ def main():
                 else:
                     if game.turn == RED:
                         # Use MCTS for AI move
-                        pass
+                        best_move = mcts_search(game.board, num_iterations=2)  # Adjust the number of iterations as needed
+                        game.ai_move(best_move)
 
 
 
