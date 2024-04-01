@@ -83,22 +83,6 @@ def stats(game):
     elif game.winner() == RED:
         print("RED")
 
-def get_hint(board):
-    best_score = float('-inf')
-    best_move = None
-    for piece in board.get_all_pieces(BLUE):
-        valid_moves = board.get_valid_moves(piece)
-        for move in valid_moves.items():
-            temp_board = deepcopy(board)
-            temp_piece = temp_board.get_piece(piece.row, piece.col)
-            new_board = board.simulate_move(temp_piece, move, temp_board)
-            score, _ = minimax(new_board, 2, RED, board, float('inf'), float('-inf'))
-            if score > best_score:
-                best_score = score
-                best_move = (piece.row, piece.col, move[0][0], move[0][1])
-
-    return best_move
-
 
 def main():
     red_wins = 0
@@ -154,9 +138,10 @@ def main():
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_h and game.turn == BLUE:
                     # If 'H' is pressed during the player's turn, show hint
-                    hint = get_hint(game.board)
+                    print("Please wait for hint.")
+                    hint = game.get_hint()
                     if hint:
-                        print("Hint: Move piece at", hint[0], ",", hint[1], "to row", hint[2], ",", hint[3])
+                        print("Hint: Move piece at row:", hint[0], "and column:", hint[1], "to row:", hint[2], "and column:", hint[3])
 
             game.update()
 

@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pygame
 import math
 from terraceGame.constants import *
@@ -278,4 +279,3 @@ class Board:
         evaluation = red_evaluation1 + red_evaluation2 + red_evaluation3 + red_evaluation4 + red_evaluation5 + blue_evaluation1 + blue_evaluation2 + blue_evaluation3 + blue_evaluation4 + blue_evaluation5
         return evaluation
     
-        

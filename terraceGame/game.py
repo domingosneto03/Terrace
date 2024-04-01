@@ -1,4 +1,6 @@
+from copy import deepcopy
 import pygame
+from minimax.algorithm import minimax
 from terraceGame.constants import *
 from terraceGame.board import Board
 
@@ -115,4 +117,17 @@ class Game:
         self.board= board
         self.change_turn()
 
-    
+    def get_hint(self):
+        best_score = float('-inf')
+        best_move = None
+        for piece in self.board.get_all_pieces(BLUE):  # Accessing get_all_pieces() from the board
+            valid_moves = self.board.get_valid_moves(piece)
+            for move in valid_moves.items():
+                temp_board = deepcopy(self.board)
+                temp_piece = temp_board.get_piece(piece.row, piece.col)
+                score, _ = minimax(temp_board, 1, BLUE, self, float('-inf'), float('inf'))  # Adjust depth as needed
+                if score > best_score:
+                    best_score = score
+                    best_move = (piece.row+1, piece.col+1, move[0][0]+1, move[0][1]+1)
+
+        return best_move
