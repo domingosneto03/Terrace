@@ -27,6 +27,7 @@ class Game:
         if piece != None and piece.get_color() == self.turn:
             self.selected = piece
             self.valid_moves = self.board.get_valid_moves(piece)
+            self.board.piece_used(piece, self.turn)
             return True
         return False
     
