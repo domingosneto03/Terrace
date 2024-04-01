@@ -66,3 +66,42 @@ BOARD_LEVEL_PATTERN = [
     [2, 2, 3, 4, 5, 6, 7, 7],
     [1, 2, 3, 4, 5, 6, 7, 8]
 ]
+
+def LEVELS(color):
+    if color == GREY1:
+        return [(0,0)]
+    elif color == LIGHT_GREY1:
+        return [(1,0), (1,1), (0,1)]
+    elif color == GREY2:
+        return [(2,0), (2,1), (2,2), (1,2), (0,2)]
+    elif color == LIGHT_GREY2:
+        return [(3,0), (3,1), (3,2), (3,3), (2,3), (1,3), (0,3)]
+    
+    elif color == GREY3:
+        return [(0,4), (1,4), (2,4), (3,4), (3,5), (3,6), (3,7)]
+    elif color == LIGHT_GREY3:
+        return [(0,5), (1,5), (2,5), (2,6), (2,7)]
+    elif color == GREY4:
+        return [(0,6), (1,6), (1,7)]
+    elif color == LIGHT_GREY4:
+        return [(0,7)]
+    
+    elif color == GREY5:
+        return [(4,0), (4,1), (4,2), (4,3), (5,3), (6,3), (7,3)]
+    elif color == LIGHT_GREY5:
+        return [(5,0), (5,1), (5,2), (6,2), (7,2)]
+    elif color == GREY6:
+        return [(6,0), (6,1), (7,1)]
+    elif color == LIGHT_GREY6:
+        return [(7, 0)]
+    
+    elif color == LIGHT_GREY7:
+        return [(7,4), (6,4), (5,4), (4,4), (4,5), (4,6), (4,7)]
+    elif color == GREY7:
+        return [(7,5), (6,5), (5,5), (5,6), (5,7)]
+    elif color == LIGHT_GREY8:
+        return [(7,6), (6,6), (6,7)]
+    elif color == GREY8:
+        return [(7,7)]
+    else:
+        return 0
