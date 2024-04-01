@@ -1,4 +1,4 @@
-# Terrace_IART_Assignment1
+# Terrace
 
 This project was created by 3 students from FEUP - Faculty of Engineer at University of Porto.
 
