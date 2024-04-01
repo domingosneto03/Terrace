@@ -11,7 +11,8 @@ Run `main.py` file by clicking on the play button if you are using VSCode or by 
 python main.py
 ```
 Explore the different modes availible for the game and become a true Terrace master.
-You can check the project presentation by clicking [here](terrace-g108.pdf)
+
+You can check the project presentation by clicking [here](terrace-g108.pdf).
 
 Project done by:
 
