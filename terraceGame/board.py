@@ -178,6 +178,7 @@ class Board:
     def get_valid_moves(self, piece):
         moves = {}
         current_level = COLOR_PATTERN[piece.row][piece.col]
+        level_list = LEVELS(current_level) # a constant list with the positions that belong to a certain level
 
         for row in range(ROWS):
             for col in range(COLS):
@@ -187,8 +188,29 @@ class Board:
 
                     # moving in the same level
                     if target_level == current_level:
-                        if target_piece is None:
-                            moves[(row, col)] = target_piece
+                        idx = level_list.index((piece.row, piece.col)) # returns index of list where the position of the piece is found
+
+                        # checks if there are valid moves ahead -> checks for obstacles
+                        for i in range(idx, len(level_list)):
+                            pos = level_list[i]
+                            temp_target =self.grid[pos]
+                            if  pos == (row, col) and target_piece is None:
+                                moves[(row, col)] = target_piece
+                                break
+                            elif temp_target != None:
+                                if temp_target.get_color() != piece.get_color():
+                                    break
+                        
+                        # checks if there are valid moves behind -> checks for obstacles
+                        for i in range(idx, -1, -1):
+                            pos = level_list[i]
+                            temp_target =self.grid[pos]
+                            if pos == (row, col) and target_piece is None:
+                                moves[(row, col)] = target_piece
+                                break
+                            elif temp_target != None:
+                                if temp_target.get_color() != piece.get_color():
+                                    break
 
                     # moving in a different level
                     else:
